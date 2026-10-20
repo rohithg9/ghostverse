@@ -1,0 +1,22 @@
+# Ghostverse — Netlify settings (read automatically when the site is linked to GitHub)
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = "echo 'static site, nothing to build'"
+
+[functions]
+  node_bundler = "esbuild"
+
+# never cache the game page or settings, so updates show up straight away
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/config.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
