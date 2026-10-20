@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ghostverse Live</title><meta name="robots" content="noindex">
+<style>
+:root{--bg:#0a0916;--card:#15122b;--line:rgba(255,255,255,.1);--ink:#f1edff;--mute:#a79fc9;--gold:#ffd28a;--ecto:#7cf3e0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;padding:16px}
+h1{font-size:22px;margin:0 0 4px}.sub{color:var(--mute);font-size:13px;margin-bottom:16px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff4d6a;margin-right:6px;animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.3}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.k{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}.k b{display:block;font-size:28px;color:var(--gold);font-variant-numeric:tabular-nums}.k small{color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px}.card h2{font-size:15px;margin:0 0 10px;color:var(--ecto)}
+.bars{display:flex;align-items:flex-end;gap:3px;height:160px}.bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.bars i{width:100%;border-radius:3px 3px 0 0;background:linear-gradient(#7cf3e0,#6b4bd8)}.bars span{font-size:9px;color:var(--mute);margin-top:3px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}.row:last-child{border:0}.row small{color:var(--mute)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.err{color:#ffb3c0}
+</style></head><body>
+<h1><span class="dot"></span>Ghostverse Live</h1><div class="sub" id="upd">Loading…</div>
+<div class="grid" id="kpis"></div>
+<div class="card"><h2>Ghosts caught per day (last 30 days)</h2><div class="bars" id="bars"></div></div>
+<div class="two"><div class="card"><h2>Latest catches</h2><div id="feed"></div></div><div class="card"><h2>Top cities</h2><div id="cities"></div></div></div>
+<script src="config.js"></script>
+<script>
+const C = window.GV_CONFIG || {}, URL0 = (C.supabaseUrl || '').replace(/\/$/, ''), KEY = C.supabaseKey || '';
+const n = x => (x || 0).toLocaleString(), esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ago = t => { const m = Math.round((Date.now() - new Date(t)) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; };
+async function load(){
+  try{
+    const r = await fetch(URL0 + '/rest/v1/rpc/world_stats', {method:'POST', headers:{apikey:KEY, 'Content-Type':'application/json'}, body:'{}'});
+    const w = await r.json(); if(!r.ok) throw new Error(w.message || r.status);
+    document.getElementById('kpis').innerHTML = [['Ghosts today', w.today], ['This month', w.month], ['All time', w.total], ['Hunters', w.hunters], ['Hunting today', w.hunters_today], ['Cities', w.cities]].map(k => '<div class="k"><b>' + n(k[1]) + '</b><small>' + k[0] + '</small></div>').join('');
+    const d = w.daily || [], mx = Math.max(1, ...d.map(x => x.n));
+    document.getElementById('bars').innerHTML = d.length ? d.map(x => '<div title="' + x.day + ': ' + x.n + '"><i style="height:' + Math.max(2, x.n / mx * 100) + '%"></i><span>' + String(x.day).slice(8) + '</span></div>').join('') : '<small>No catches yet.</small>';
+    document.getElementById('feed').innerHTML = (w.recent || []).map(x => '<div class="row"><span><b>' + esc(x.name || 'A hunter') + '</b> · ' + esc(x.ghost) + (x.city ? ' · ' + esc(x.city) : '') + '</span><small>' + ago(x.at) + '</small></div>').join('') || '<small>No catches yet.</small>';
+    document.getElementById('cities').innerHTML = (w.top_cities || []).map(x => '<div class="row"><span>' + esc(x.city) + '</span><b>' + n(x.n) + '</b></div>').join('') || '<small>No cities yet.</small>';
+    document.getElementById('upd').textContent = 'Updated ' + new Date().toLocaleTimeString() + ' · refreshes every 30 seconds';
+  }catch(e){ document.getElementById('upd').innerHTML = '<span class="err">Could not load stats: ' + esc(e.message) + '</span>'; }
+}
+load(); setInterval(load, 30000);
+</script></body></html>

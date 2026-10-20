@@ -431,6 +431,18 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
 @keyframes hiring{0%{box-shadow:0 0 0 0 rgba(255,226,120,.95)}100%{box-shadow:0 0 0 22px rgba(255,226,120,0)}}
 .traincard{border-radius:20px;padding:16px;border:1px solid rgba(124,243,224,.5);background:radial-gradient(120% 90% at 0% 0%,rgba(124,243,224,.2),transparent 60%),linear-gradient(160deg,#16243a,#0e0c22);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin-bottom:14px}
 .traincard h3{font-family:var(--display);font-size:19px}.traincard p{margin:4px 0 0;color:#cfe;font-size:13.5px}
+.acct{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(124,243,224,.45);background:rgba(124,243,224,.07);border-radius:14px;padding:10px 12px;margin-bottom:12px}.acct b{display:block;font-size:14.5px}.acct small{color:var(--mute);font-size:12.5px;word-break:break-all}.acct.off{border-color:rgba(255,178,74,.5);background:rgba(255,178,74,.07)}
+.livecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;width:100%;text-align:left;padding:10px 14px;margin-bottom:12px;border-radius:14px;border:1px solid rgba(124,243,224,.35);background:rgba(124,243,224,.06)}
+.livedot{width:10px;height:10px;border-radius:50%;background:#ff4d6a;box-shadow:0 0 0 0 rgba(255,77,106,.7);animation:livep 1.6s infinite}@keyframes livep{70%{box-shadow:0 0 0 9px rgba(255,77,106,0)}100%{box-shadow:0 0 0 0 rgba(255,77,106,0)}}
+.lvt b{display:block;font-size:14px}.lvt small{display:block;color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}.wstats div{padding:10px;border-radius:12px;background:rgba(255,255,255,.04);text-align:center}.wstats b{display:block;font-family:var(--display);font-size:20px;color:#ffd28a}.wstats small{color:var(--mute);font-size:11.5px}
+.wbars{display:flex;align-items:flex-end;gap:2px;height:70px;margin-top:6px}.wbars i{flex:1;min-width:2px;border-radius:2px 2px 0 0;background:linear-gradient(#7cf3e0,#6b4bd8)}
+.wfeed{display:flex;flex-direction:column;gap:4px;margin-top:10px}.wfeed div{font-size:13.5px;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.03)}.wfeed small{float:right;color:var(--mute);font-size:11.5px}
+.invhero{text-align:center;padding:6px 0 4px}.invbig{font-family:var(--display);font-size:44px;color:#ffd28a;display:flex;align-items:center;justify-content:center;gap:8px}.invbig .coin{width:30px;height:30px}.invhero p{margin:4px 0 0;color:#ddd5f5;font-size:14px}
+.invprog{margin:12px 0}.invbar{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.invbar i{display:block;height:100%;background:linear-gradient(90deg,#7cf3e0,#ffb24a)}.invprog small{display:block;margin-top:6px;color:var(--mute);font-size:12.5px}
+.msgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:12px}.ms{border:1px solid var(--line2);border-radius:12px;padding:6px 4px;text-align:center;min-width:0}.ms b{display:block;font-size:16px}.ms small{display:block;font-size:10px;line-height:1.2;color:var(--mute)}.ms.got{border-color:rgba(124,243,224,.6);background:rgba(124,243,224,.1)}
+.sharegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:8px}.sh{display:flex;align-items:center;gap:8px;padding:12px;border-radius:14px;border:1px solid var(--line2);background:rgba(255,255,255,.04);font-weight:700;font-size:14px;text-align:left}.sh span{font-size:18px}.sh.wa{background:#1f7a4a;border-color:#2fb36a;color:#fff}
+.board{display:flex;flex-direction:column;gap:4px;margin-top:8px}.brow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04)}.brow b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brow small{color:var(--mute);font-size:12px}.brow.me{border:1px solid rgba(124,243,224,.6);background:rgba(124,243,224,.1)}.bn{text-align:center;font-weight:800}
 .chgline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 2px}.chgline small{color:var(--mute);font-size:12.5px}
 .oilchip{font-weight:700;font-size:13.5px;padding:5px 10px;border-radius:999px;background:rgba(255,178,74,.12);border:1px solid rgba(255,178,74,.45);color:#ffd28a}
 .oilchip.low{background:rgba(255,90,114,.14);border-color:rgba(255,90,114,.55);color:#ffb3c0}.oilchip.prem{background:rgba(124,243,224,.12);border-color:rgba(124,243,224,.5);color:#bffcf1}
@@ -535,6 +547,7 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
 
   <!-- TONIGHT -->
   <section id="tab-tonight" hidden>
+    <button class="livecard" id="liveCard" hidden><span class="livedot"></span><span class="lvt"><b id="lvHead">Live around the world</b><small id="lvFeed"></small></span></button>
     <div class="traincard" id="trainCard" hidden><div><div class="eyebrow" style="color:#9ff8ea">New here?</div><h3>Take the 1-minute training</h3><p>The Lantern Keeper shows you how to find and catch your first ghost, step by step.</p></div><button class="btn ecto" id="trainBtn">Start</button></div>
     <div id="campSlot" style="margin-bottom:14px"></div>
     <div class="huntHero">
@@ -587,7 +600,7 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
       <div class="card stack">
         <h2>Play with friends</h2>
         <p class="note" style="font-size:14px;color:#d6cff0">Hide a ghost in a friend's home and dare them to catch it, or invite them to play.</p>
-        <div class="row2"><button class="btn ecto" id="hauntBtn">Send a haunting</button><button class="btn ghost" id="inviteBtn">Invite friends</button></div>
+        <div class="row2"><button class="btn ecto" id="hauntBtn">Send a haunting</button><button class="btn pump" id="inviteBtn">Invite · +300 🪙</button></div>
       </div>
     </div>
   </section>
@@ -613,6 +626,8 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
   <!-- JOURNAL -->
   <section id="tab-journal" hidden>
     <div class="stack"><h2>Quests</h2></div>
+    <div class="section" id="worldBox" hidden></div>
+    <div class="section" id="boardBox" hidden></div>
     <div class="section" id="campSlot2"></div>
     <div class="section">
       <div class="rushcard"><div><div class="eyebrow" style="color:#ffcf96">Timed challenge</div><h3>Ghost Rush</h3><p>1, 3 or 5 minutes. Catch as many as you can, build combos, then dare friends to beat your score on the same ghosts.</p></div><button class="btn pump" id="rushBtn2">Play</button></div>
@@ -650,7 +665,7 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
   <div class="inner" id="introSetup" hidden>
     <div class="keeper">Your lantern is lit</div>
     <h2 style="font-size:24px">What should the spirits call you?</h2>
-    <div class="field"><label for="nameIn">Hunter name</label><input id="nameIn" maxlength="18" autocomplete="nickname" placeholder="e.g. Rohith"></div>
+    <div class="field"><label for="nameIn">Hunter name</label><input id="nameIn" maxlength="18" autocomplete="nickname" placeholder="e.g. Rohith"></div><p class="note" id="nameMsg" hidden></p>
     <div class="field"><label>How scary should it get?</label>
       <div class="seg3" id="frightSeg">
         <button data-f="friendly" aria-pressed="false"><b>Friendly</b><small>Cute ghosts only</small></button>
@@ -909,7 +924,7 @@ const RIDDLES = [
   {q:'What gets wetter the more it dries?', a:'A towel', w:['A sponge','Rain']},
 ];
 /* Site settings live in config.js on the hosted version (window.GV_CONFIG). */
-const CFG = Object.assign({posthogKey:'', posthogHost:'https://eu.i.posthog.com', publicUrl:'', freeLaunch:true, stripe:{}, maptilerKey:'', mapStyle:'', googleMapsKey:'', mapillaryToken:'', verifiedPayments:false, stripeLink:'', premiumPrice:'$4.99', stripePublishableKey:''}, window.GV_CONFIG || {});
+const CFG = Object.assign({posthogKey:'', posthogHost:'https://eu.i.posthog.com', publicUrl:'', freeLaunch:true, stripe:{}, maptilerKey:'', mapStyle:'', googleMapsKey:'', mapillaryToken:'', verifiedPayments:false, supabaseUrl:'', supabaseKey:'', stripeLink:'', premiumPrice:'$4.99', stripePublishableKey:''}, window.GV_CONFIG || {});
 const COIN = {Common:20, Uncommon:40, Rare:80, Epic:150, Legendary:1000};
 const BEAMS = {violet:['#e2d8ff','#8a6dff'], ecto:['#dafff7','#2fdcc0'], pumpkin:['#ffe4bf','#ff7a1a'], blood:['#ffd3d9','#e0213f'], gold:['#fff4c8','#f0b429']};
 const SHOP = {
@@ -992,7 +1007,7 @@ P.style = Object.assign({beam:'violet', frame:'classic'}, P.style); if(!BEAMS[P.
 if(!Array.isArray(P.owned)) P.owned = ['b_violet','f_classic']; if(!Array.isArray(P.claimed)) P.claimed = [];
 P.coins = Math.max(0, Math.floor(+P.coins || 0)); P.early = clamp(Math.floor(+P.early || 0), 0, 7);
 if(!['friendly','spooky','terrifying'].includes(P.fright)) P.fright = 'spooky';
-const saveP = () => store.set('profile', P);
+const saveP = () => { if(window.__gvAdopt) return; P.savedAt = Date.now(); store.set('profile', P); cloudMark(); };
 const level = xp => Math.floor(Math.sqrt(xp / 120)) + 1;
 const lvlXp = l => (l - 1) * (l - 1) * 120;
 const rank = l => RANKS[Math.min(RANKS.length - 1, Math.floor((l - 1) / 2))];
@@ -1473,7 +1488,7 @@ function renderVault(){
   });
 }
 function renderJournal(){
-  renderCampCard(); renderAch();
+  renderCampCard(); renderAch(); renderWorld(); renderBoard();
   const box = $('#chapters'); box.innerHTML = '';
   const lim = effNight();
   const mk = (num, t, p, locked) => '<div class="ch' + (locked ? ' locked' : '') + '"><div class="num">' + num + '</div><div><h3>' + esc(t) + '</h3><p>' + esc(p) + '</p></div></div>';
@@ -1483,7 +1498,7 @@ function renderJournal(){
   box.innerHTML = '<div class="stack">' + html + '</div>';
 }
 function vaultBadge(){ const t = $('#vaultTab'); if(!t) return; const low = P.jars.some(j => jarEnergy(j) < 0.25); let d = t.querySelector('.dot'); if(low && !d){ d = document.createElement('span'); d.className = 'dot'; t.appendChild(d); } else if(!low && d) d.remove(); }
-function render(){ renderMe(); vaultBadge(); $('#coinNum').textContent = P.coins.toLocaleString(); if(tab === 'map'){ if(W.failed) renderFallback(); else refreshMap(); } else if(tab === 'tonight'){ $('#trainCard').hidden = !!P.tutDone; renderTravelChips(); renderChg(); renderCampCard(); renderNight(); renderFeatured(); renderSignals(); renderQuests(); renderBoss(); } else if(tab === 'armory') renderArmory(); else if(tab === 'vault') renderVault(); else renderJournal(); }
+function render(){ renderMe(); vaultBadge(); $('#coinNum').textContent = P.coins.toLocaleString(); if(tab === 'map'){ if(W.failed) renderFallback(); else refreshMap(); } else if(tab === 'tonight'){ $('#trainCard').hidden = !!P.tutDone; renderTravelChips(); renderChg(); renderLive(); renderCampCard(); renderNight(); renderFeatured(); renderSignals(); renderQuests(); renderBoss(); } else if(tab === 'armory') renderArmory(); else if(tab === 'vault') renderVault(); else renderJournal(); }
 $('#coinBtn').onclick = () => setTab('armory');
 
 /* ================= ARMORY ================= */
@@ -1618,6 +1633,264 @@ function premiumBundleSheet(from){
   AN.track('premium_sheet', {from});
 }
 addEventListener("hashchange", () => { try{ handlePaidReturn(); render(); }catch(e){} });
+try{ const rq = new URLSearchParams(location.search).get('r'); if(rq){ const r = rq.slice(0, 24);
+  if(!P.invitedBy && r.toLowerCase() !== (P.uname || '').toLowerCase()){ P.invitedBy = r; P.invitedName = r; store.set('profile', P); AN.track('arrived_via_invite'); }
+  history.replaceState(null, '', location.pathname + location.hash); } }catch(e){}
+/* ===== Accounts (Supabase): email sign-in, progress saved to the player's account ===== */
+const FREE_ANON = 5;
+const SB = {url:(CFG.supabaseUrl || '').replace(/\/$/, ''), key:CFG.supabaseKey || ''};
+function sbOn(){ try{ return !!(SB.url && SB.key); }catch(e){ return false; } }
+let SESS = (() => { try{ return JSON.parse(localStorage.getItem('gv_sess') || 'null'); }catch(e){ return null; } })();
+function saveSess(){ try{ if(SESS) localStorage.setItem('gv_sess', JSON.stringify(SESS)); else localStorage.removeItem('gv_sess'); }catch(e){} }
+function signedIn(){ try{ return !!(SESS && SESS.uid); }catch(e){ return false; } }
+function jwtClaims(t){ try{ return JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); }catch(e){ return {}; } }
+function setSess(j){ const c = jwtClaims(j.access_token); SESS = {at:j.access_token, rt:j.refresh_token, exp:Date.now() + (+j.expires_in || 3600) * 1000, uid:(j.user && j.user.id) || c.sub, email:(j.user && j.user.email) || c.email || (SESS && SESS.email) || ''}; saveSess(); }
+async function sbFresh(){
+  if(!SESS || Date.now() < SESS.exp - 60000) return;
+  const r = await fetch(SB.url + '/auth/v1/token?grant_type=refresh_token', {method:'POST', headers:{apikey:SB.key, 'Content-Type':'application/json'}, body:JSON.stringify({refresh_token:SESS.rt})});
+  const j = await r.json().catch(() => null);
+  if(!r.ok || !j || !j.access_token){ if(r.status === 400 || r.status === 401){ SESS = null; saveSess(); } throw new Error('Please sign in again'); }
+  setSess(j);
+}
+async function sbFetch(path, opts = {}){
+  const h = Object.assign({apikey:SB.key, 'Content-Type':'application/json'}, opts.headers || {});
+  if(opts.auth !== false && SESS){ await sbFresh(); if(SESS) h.Authorization = 'Bearer ' + SESS.at; }
+  const r = await fetch(SB.url + path, {method:opts.method || 'GET', headers:h, body:opts.body, keepalive:!!opts.keepalive});
+  const t = await r.text(); let j = null; try{ j = t ? JSON.parse(t) : null; }catch(e){}
+  if(!r.ok) throw new Error((j && (j.msg || j.message || j.error_description || j.error)) || ('Error ' + r.status));
+  return j;
+}
+// --- saving progress to the account (a few seconds after any change, and when the app is put away)
+let cloudT = null;
+function cloudMark(){ if(!sbOn() || !signedIn()) return; clearTimeout(cloudT); cloudT = setTimeout(() => cloudPush(false), 5000); }
+async function cloudPush(leaving){
+  if(!sbOn() || !signedIn() || window.__gvAdopt) return false;
+  try{
+    const at = P.savedAt || Date.now();
+    await sbFetch('/rest/v1/players', {method:'POST', keepalive:leaving, headers:{Prefer:'resolution=merge-duplicates,return=minimal'}, body:JSON.stringify({id:SESS.uid, name:P.uname || null, xp:P.xp || 0, catches:P.total || 0, profile:P, updated_at:new Date().toISOString()})});
+    P.syncAt = at; store.set('profile', P); return true;
+  }catch(e){ if(/duplicate|23505|unique/i.test(e.message)){ P.uname = ''; store.set('profile', P); return 'dup'; } return false; }
+}
+document.addEventListener('visibilitychange', () => { if(document.hidden && signedIn()){ clearTimeout(cloudT); cloudPush(true); } });
+const progScore = p => (p.xp || 0) + (p.total || 0) * 10 + ((p.premUntil || 0) > Date.now() ? 1e7 : 0);
+function adoptCloud(cp, msg){ window.__gvAdopt = true; clearTimeout(cloudT); cp.syncAt = cp.savedAt || Date.now(); store.set('profile', cp); toast(msg, 2500); setTimeout(() => location.reload(), 900); }
+// after signing in: use whichever progress is further along (account or this phone)
+async function afterLogin(){
+  AN.track('signin_ok');
+  let rows = null; try{ rows = await sbFetch('/rest/v1/players?id=eq.' + SESS.uid + '&select=profile'); }catch(e){ toast('Signed in, but your saved progress could not load: ' + e.message, 4000); return; }
+  const cp = rows && rows[0] && rows[0].profile;
+  if(cp && typeof cp === 'object' && progScore(cp) >= progScore(P)){ cp.coins = Math.max(cp.coins || 0, P.coins || 0); adoptCloud(cp, 'Welcome back, ' + (cp.name || 'hunter') + '! Loading your saved hunter…'); return; }
+  if(cp && typeof cp === 'object') P.coins = Math.max(P.coins || 0, cp.coins || 0);
+  saveP(); const ok = await cloudPush(false); try{ render(); }catch(e){}
+  toast(ok ? 'Signed in! Your progress is now saved to your account.' : 'Signed in, but saving failed. We\'ll keep trying.', 3500);
+}
+// opening the game while signed in: pick up progress made on another phone
+async function cloudPull(){
+  if(!sbOn() || !signedIn()) return;
+  try{ const rows = await sbFetch('/rest/v1/players?id=eq.' + SESS.uid + '&select=profile'); const cp = rows && rows[0] && rows[0].profile;
+    if(!cp){ cloudPush(false); return; }
+    if((cp.savedAt || 0) > (P.syncAt || 0) + 1000 && (cp.savedAt || 0) > (P.savedAt || 0)){ adoptCloud(cp, 'Syncing your progress from your other device…'); return; }
+    if((P.savedAt || 0) > (P.syncAt || 0)) cloudPush(false);
+  }catch(e){}
+}
+// returning from the email link: the sign-in arrives in the address bar
+function sbReturn(){
+  const h = location.hash || ''; if(!/access_token=|error_description=/.test(h)) return;
+  const q = new URLSearchParams(h.slice(1)); try{ history.replaceState(null, '', location.pathname); }catch(e){}
+  if(q.get('access_token')){ setSess({access_token:q.get('access_token'), refresh_token:q.get('refresh_token'), expires_in:q.get('expires_in')}); setTimeout(afterLogin, 600); }
+  else { AN.track('signin_link_error', {code:q.get('error_code') || ''}); setTimeout(() => { toast(/expired/i.test(q.get('error_description') || '') ? 'That sign-in link has expired. Ask for a new one.' : 'Sign-in didn\'t work: ' + (q.get('error_description') || 'try again'), 4500); signInSheet(); }, 900); }
+}
+sbReturn(); addEventListener('hashchange', sbReturn);
+if(signedIn()) setTimeout(cloudPull, 1200);
+/* ---- easy join: an anonymous account + a unique hunter name. No email, no password. ---- */
+async function ensureAccount(){
+  if(!sbOn()) return false; if(signedIn()) return true;
+  try{ const j = await sbFetch('/auth/v1/signup', {method:'POST', auth:false, body:JSON.stringify({data:{}})}); if(j && j.access_token){ setSess(j); AN.track('account_created'); return true; } }
+  catch(e){ AN.track('account_fail', {msg:String(e.message).slice(0, 80)}); }
+  return false;
+}
+const cleanName = n => (n || '').replace(/[^\p{L}\p{N}_ .-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 18);
+async function claimName(n){                 // 'ok' | 'taken' | 'offline'
+  n = cleanName(n); if(n.length < 3) return 'short';
+  if(!await ensureAccount()) return 'offline';
+  try{ const free = await sbFetch('/rest/v1/rpc/name_available', {method:'POST', body:JSON.stringify({n})}); if(free === false) return 'taken'; }catch(e){}
+  const was = P.uname; P.name = n; P.uname = n; saveP(); clearTimeout(cloudT);
+  const r = await cloudPush(false); if(r === 'dup'){ P.uname = was || ''; saveP(); return 'taken'; }
+  if(r){ AN.track('name_claimed'); afterJoin(); return 'ok'; } return 'offline';
+}
+const nameIdeas = n => { const b = cleanName(n).replace(/\d+$/, '') || 'Hunter'; return [b + Math.floor(10 + Math.random() * 89), b + '_' + ['Boo','Ghost','Moon','Night'][Math.floor(Math.random() * 4)], 'The' + b]; };
+function nameSheet(reason){
+  if(!sbOn()) return;
+  openSheet('<div class="hd"><h2>Choose your hunter name</h2>' + (reason === 'force' ? '' : '<button class="btn ghost" id="shClose">Later</button>') + '</div>' +
+    '<p class="lore">' + (reason === 'taken' ? 'Someone already hunts as <b>' + esc(P.name) + '</b>. Pick a name that\'s only yours.' : 'Your name is how friends find you, beat you on the leaderboard and earn rewards from your invite link.') + '</p>' +
+    '<div class="field"><input id="nsIn" maxlength="18" autocomplete="nickname" value="' + esc(reason === 'taken' ? '' : (P.name || '')) + '" placeholder="e.g. GhostQueen"></div><div class="chips" id="nsIdeas"></div><p class="note" id="nsMsg"></p>' +
+    '<button class="btn pump big" id="nsGo">Save my name</button>', sh => {
+      const c = sh.querySelector('#shClose'); if(c) c.onclick = closeSheet;
+      const inp = sh.querySelector('#nsIn'), msg = sh.querySelector('#nsMsg'), go = sh.querySelector('#nsGo');
+      const ideas = list => { sh.querySelector('#nsIdeas').innerHTML = list.map(x => '<button class="chip">' + esc(x) + '</button>').join(''); sh.querySelectorAll('#nsIdeas .chip').forEach(b => b.onclick = () => { inp.value = b.textContent; }); };
+      ideas(nameIdeas(P.name || 'Hunter'));
+      go.onclick = async () => { go.disabled = true; go.textContent = 'Checking…'; const r = await claimName(inp.value); go.disabled = false; go.textContent = 'Save my name';
+        if(r === 'ok'){ closeSheet(); toast('You are @' + P.uname + '. Welcome to the hunt!'); render(); }
+        else if(r === 'taken'){ msg.textContent = '"' + cleanName(inp.value) + '" is taken. Try one of these:'; ideas(nameIdeas(inp.value)); }
+        else if(r === 'short'){ msg.textContent = 'Use at least 3 letters or numbers.'; }
+        else { msg.textContent = 'Can\'t reach the server. Check your connection and try again.'; } };
+    });
+}
+// existing players: create the account quietly and keep their name if it's free
+async function autoJoin(){
+  if(!sbOn() || !P.intro || P.uname) { if(P.uname) afterJoin(); return; }
+  const r = await claimName(P.name || '');
+  if(r === 'taken' || r === 'short') setTimeout(() => { if($('#sheetWrap').hidden && !H.on) nameSheet('taken'); }, 1500);
+}
+setTimeout(autoJoin, 2500);
+
+/* ---- invites: friends get 200 coins, you get 300 per friend who catches 3 ghosts, plus milestone prizes ---- */
+const REF_ME = 300, REF_THEM = 200;
+const REF_MS = [{n:1, txt:'+300 bonus coins', give:() => { P.coins += 300; }}, {n:3, txt:'2 Rare Lures + 500 coins', give:() => { P.inv.lure = (P.inv.lure || 0) + 2; P.coins += 500; }},
+  {n:5, txt:'7 days of Premium', give:() => { P.premUntil = Math.max(Date.now(), P.premUntil || 0) + 7 * DAY; }}, {n:10, txt:'30 days of Premium', give:() => { grantPremium(); }}, {n:25, txt:'5,000 coins + Legend title', give:() => { P.coins += 5000; P.legend = true; }}];
+async function afterJoin(){
+  if(!signedIn() || !P.uname) return;
+  // I was invited: register it once and give my welcome gift
+  if(P.invitedBy && !P.refJoined && P.invitedBy.toLowerCase() !== P.uname.toLowerCase()){
+    try{ await sbFetch('/rest/v1/referrals', {method:'POST', headers:{Prefer:'return=minimal'}, body:JSON.stringify({inviter:P.invitedBy})});
+      P.refJoined = 1; P.coins += REF_THEM; saveP(); bumpCoins(); sfx.success(); toast('🎁 ' + P.invitedBy + ' invited you: +' + REF_THEM + ' coins!', 4000); AN.track('invite_joined'); }
+    catch(e){ if(/duplicate|23505/i.test(e.message)){ P.refJoined = 1; saveP(); } }
+  }
+  if(P.refJoined && (P.total || 0) >= 3 && !P.refQual){ try{ await sbFetch('/rest/v1/rpc/referral_qualify', {method:'POST', body:'{}'}); P.refQual = 1; saveP(); }catch(e){} }
+  collectReferrals();
+}
+let refBusy = false;
+async function collectReferrals(){
+  if(!signedIn() || !P.uname || refBusy) return; refBusy = true;
+  try{ const r = await sbFetch('/rest/v1/rpc/collect_referrals', {method:'POST', body:'{}'}); if(!r) return;
+    P.refCount = r.total || 0;
+    if(r.new > 0){ P.coins += r.new * REF_ME; sfx.success(); buzz([40, 30, 80]); toast('🎉 ' + r.new + (r.new === 1 ? ' friend' : ' friends') + ' joined through your link! +' + (r.new * REF_ME) + ' coins', 5000); AN.track('invite_reward', {n:r.new}); }
+    for(const m of REF_MS){ if(P.refCount >= m.n && (P.refMs || 0) < m.n){ m.give(); P.refMs = m.n; setTimeout(() => toast('🏆 ' + m.n + (m.n === 1 ? ' friend' : ' friends') + ' invited: ' + m.txt + '!', 5000), 2500); } }
+    saveP(); bumpCoins();
+  }catch(e){} finally{ refBusy = false; }
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) collectReferrals(); });
+setInterval(() => { if(!document.hidden && P.total >= 3 && P.refJoined && !P.refQual) afterJoin(); }, 60000);
+
+/* ---- one-tap sharing to WhatsApp, groups and social apps ---- */
+function inviteText(kind){
+  const nm = P.uname || P.name || 'a friend'; const best = Object.keys(P.caught || {}).map(k => SP[k]).filter(Boolean).sort((a, b) => (RARITY_XP[b.rarity] || 0) - (RARITY_XP[a.rarity] || 0))[0];
+  const lines = [
+    best ? '👻 I just caught a ' + best.rarity + ' ' + best.name + ' in Ghostverse! Ghosts are hiding everywhere, even in your room.' : '👻 Ghosts are hiding in your room right now. I\'m hunting them in Ghostverse!',
+    '🎁 Join with my link and get ' + REF_THEM + ' free coins:',
+  ];
+  return lines.join('\n');
+}
+function openOut(href){ const a = document.createElement('a'); a.href = href; a.rel = 'noopener'; document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 500); }
+function shareTo(where, from){
+  const url = shareBase(), text = inviteText(), both = text + '\n' + url, e = encodeURIComponent;
+  const links = {whatsapp:'https://wa.me/?text=' + e(both), telegram:'https://t.me/share/url?url=' + e(url) + '&text=' + e(text), x:'https://x.com/intent/post?text=' + e(both),
+    facebook:'https://www.facebook.com/sharer/sharer.php?u=' + e(url), sms:'sms:' + (/iPhone|iPad|Mac/.test(navigator.userAgent) ? '&' : '?') + 'body=' + e(both), email:'mailto:?subject=' + e('Come ghost hunting with me 👻') + '&body=' + e(both)};
+  AN.track('invite_share', {where, from});
+  if(todayKey() !== P.shareDay){ P.shareDay = todayKey(); P.coins += 50; saveP(); bumpCoins(); setTimeout(() => toast('+50 coins for sharing today!'), 1200); }
+  if(where === 'copy') return copyText(both);
+  if(where === 'more'){ if(navigator.share){ navigator.share({title:'Ghostverse', text:both}).catch(() => {}); return; } return copyText(both); }
+  openOut(links[where]);
+}
+function inviteSheet(from){
+  AN.track('invite_sheet', {from});
+  if(sbOn() && !P.uname){ nameSheet(); return; }
+  const n = P.refCount || 0; const next = REF_MS.find(m => m.n > n);
+  openSheet('<div class="hd"><h2>Invite & earn</h2><button class="btn ghost" id="shClose">Close</button></div>' +
+    '<div class="invhero"><div class="invbig">+' + REF_ME + '<span class="coin"></span></div><p>for you, for every friend who joins and catches 3 ghosts.<br><b>Your friends get ' + REF_THEM + ' free coins too.</b></p></div>' +
+    '<div class="invprog"><div class="invbar"><i style="width:' + Math.min(100, (next ? n / next.n : 1) * 100).toFixed(0) + '%"></i></div><small>' + n + (n === 1 ? ' friend' : ' friends') + ' joined' + (next ? ' · ' + (next.n - n) + ' more for <b>' + next.txt + '</b>' : ' · all prizes won! 👑') + '</small></div>' +
+    '<div class="msgrid">' + REF_MS.map(m => '<div class="ms' + (n >= m.n ? ' got' : '') + '"><b>' + m.n + '</b><small>' + m.txt + '</small></div>').join('') + '</div>' +
+    '<div class="sharegrid">' +
+      '<button class="sh wa" data-to="whatsapp"><span>💬</span>WhatsApp</button><button class="sh" data-to="more"><span>📤</span>Share… (groups, Instagram)</button>' +
+      '<button class="sh" data-to="telegram"><span>✈️</span>Telegram</button><button class="sh" data-to="x"><span>𝕏</span>X</button>' +
+      '<button class="sh" data-to="facebook"><span>📘</span>Facebook</button><button class="sh" data-to="sms"><span>💌</span>Text</button>' +
+      '<button class="sh" data-to="email"><span>✉️</span>Email</button><button class="sh" data-to="copy"><span>🔗</span>Copy link</button></div>' +
+    '<p class="note" style="text-align:center">Tip: post it in your WhatsApp groups. Every friend who joins counts. Your link: <b>' + esc(shareBase().replace(/^https?:\/\//, '')) + '</b></p>', sh => {
+      sh.querySelector('#shClose').onclick = closeSheet;
+      sh.querySelectorAll('[data-to]').forEach(b => b.onclick = () => shareTo(b.dataset.to, from));
+    });
+  collectReferrals();
+}
+
+/* ---- live world activity ---- */
+const myCity = () => { if(W.portal) return W.portal.city; try{ const z = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; const c = z.split('/').pop().replace(/_/g, ' '); return c && !/^(UTC|GMT|Etc)/.test(c) ? c : ''; }catch(e){ return ''; } };
+function logCatch(sp){
+  if(!sbOn() || !signedIn() || !sp) return;
+  sbFetch('/rest/v1/catches', {method:'POST', headers:{Prefer:'return=minimal'}, body:JSON.stringify({name:P.uname || null, ghost:sp.name, rarity:sp.rarity, city:myCity() || null})}).catch(() => {});
+}
+let WS = null, wsAt = 0, feedI = 0;
+const ago = t => { const m = Math.max(0, Math.round((Date.now() - new Date(t).getTime()) / 60000)); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; };
+const fmtN = n => (n || 0).toLocaleString();
+async function loadWorld(force){
+  if(!sbOn()) return null; if(!force && WS && Date.now() - wsAt < 60000) return WS;
+  try{ WS = await sbFetch('/rest/v1/rpc/world_stats', {method:'POST', body:'{}'}); wsAt = Date.now(); }catch(e){} return WS;
+}
+async function renderLive(){
+  const el = $('#liveCard'); if(!el || !sbOn()) return; const w = await loadWorld(); if(!w){ el.hidden = true; return; }
+  el.hidden = false; $('#lvHead').textContent = '🌍 ' + fmtN(w.today) + ' ghosts caught today · ' + fmtN(w.hunters) + ' hunters';
+  tickFeed();
+}
+function tickFeed(){ const r = WS && WS.recent || []; const f = $('#lvFeed'); if(!f) return; if(!r.length){ f.textContent = 'Be the first to catch a ghost today!'; return; }
+  const x = r[feedI++ % r.length]; f.textContent = (x.name || 'A hunter') + ' caught ' + (/^[AEIOU]/i.test(x.ghost || '') ? 'an ' : 'a ') + x.ghost + (x.city ? ' in ' + x.city : '') + ' · ' + ago(x.at); }
+setInterval(() => { if(tab === 'tonight' && !H.on && !document.hidden){ tickFeed(); if(Date.now() - wsAt > 60000) renderLive(); } }, 4000);
+async function renderWorld(){
+  const box = $('#worldBox'); if(!box || !sbOn()) return; const w = await loadWorld(true); if(!w){ box.hidden = true; return; }
+  box.hidden = false; const d = w.daily || []; const mx = Math.max(1, ...d.map(x => x.n));
+  box.innerHTML = '<div class="eyebrow">🌍 Live around the world</div><div class="wstats">' +
+    [['Today', w.today], ['This month', w.month], ['All time', w.total], ['Hunters', w.hunters], ['Hunting today', w.hunters_today], ['Cities', w.cities]].map(x => '<div><b>' + fmtN(x[1]) + '</b><small>' + x[0] + '</small></div>').join('') + '</div>' +
+    (d.length ? '<div class="wbars" aria-label="Ghosts caught per day, last 30 days">' + d.map(x => '<i style="height:' + Math.max(4, x.n / mx * 100).toFixed(0) + '%" title="' + x.day + ': ' + x.n + '"></i>').join('') + '</div><small class="note">Ghosts caught per day, last 30 days</small>' : '') +
+    '<div class="wfeed">' + (w.recent || []).slice(0, 6).map(x => '<div><b>' + esc(x.name || 'A hunter') + '</b> caught a <span class="rar ' + esc(x.rarity || '') + '">' + esc(x.ghost) + '</span>' + (x.city ? ' in ' + esc(x.city) : '') + '<small>' + ago(x.at) + '</small></div>').join('') + '</div>';
+}
+$('#liveCard').onclick = () => { AN.track('live_card_tap'); setTab('journal'); };
+/* ---- leaderboard ---- */
+async function renderBoard(){
+  const box = $('#boardBox'); if(!box || !sbOn()) { if(box) box.hidden = true; return; }
+  box.hidden = false;
+  try{ await ensureAccount(); const rows = await sbFetch('/rest/v1/rpc/leaderboard', {method:'POST', body:'{}'}) || [];
+    const me = (P.uname || '').toLowerCase(); const myIdx = rows.findIndex(r => (r.name || '').toLowerCase() === me);
+    box.innerHTML = '<div class="eyebrow">🏆 Top hunters worldwide</div><div class="board">' + rows.slice(0, 20).map((r, i) => '<div class="brow' + (i === myIdx ? ' me' : '') + '"><span class="bn">' + (i < 3 ? ['🥇','🥈','🥉'][i] : i + 1) + '</span><b>' + esc(r.name) + '</b><small>Lv ' + level(r.xp || 0) + ' · ' + (r.catches || 0) + ' ghosts</small></div>').join('') + '</div>' +
+      (P.uname ? (myIdx >= 20 ? '<div class="brow me"><span class="bn">' + (myIdx + 1) + '</span><b>' + esc(P.uname) + ' (you)</b><small>Lv ' + level(P.xp) + '</small></div>' : myIdx < 0 ? '<p class="note">Catch more ghosts to join the top 50!</p>' : '') : '<button class="btn ghost" id="bdName">Choose your name to join the leaderboard</button>') +
+      '<button class="btn ecto" id="bdInvite" style="margin-top:10px">Challenge friends to beat you · +' + REF_ME + ' coins each</button>';
+    const bn = $('#bdName'); if(bn) bn.onclick = () => nameSheet();
+    $('#bdInvite').onclick = () => inviteSheet('leaderboard');
+  }catch(e){ box.innerHTML = '<p class="note">Leaderboard is loading… pull down to refresh.</p>'; }
+}
+function acctBlock(){
+  if(!sbOn()) return '';
+  return P.uname ? '<div class="acct"><div><b>@' + esc(P.uname) + (P.legend ? ' 👑' : '') + '</b><small>✓ Progress saved online · ' + (P.refCount || 0) + ((P.refCount || 0) === 1 ? ' friend' : ' friends') + ' invited</small></div><button class="btn ecto" id="pInv">Invite</button></div>'
+    : '<div class="acct off"><div><b>Pick your hunter name</b><small>Save your progress, join the leaderboard and earn invite rewards.</small></div><button class="btn pump" id="pIn">Choose</button></div>';
+}
+function wireAcct(s){
+  const a = s.querySelector('#pIn'); if(a) a.onclick = () => nameSheet();
+  const iv = s.querySelector('#pInv'); if(iv) iv.onclick = () => { closeSheet(); inviteSheet('profile'); };
+  const b = s.querySelector('#pOut'); if(b) b.onclick = async () => { b.disabled = true; await cloudPush(false); try{ await sbFetch('/auth/v1/logout', {method:'POST'}); }catch(e){} SESS = null; saveSess(); AN.track('signout'); closeSheet(); toast('Signed out. Your progress is saved to your account.'); render(); };
+}
+function signInSheet(reason){
+  if(!sbOn()) return;
+  openSheet('<div class="hd"><h2>' + (reason === 'gate' ? 'Save your hunter' : 'Sign in') + '</h2><button class="btn ghost" id="shClose">Close</button></div>' +
+    '<p class="lore">' + (reason === 'gate' ? 'You\'ve used your ' + FREE_ANON + ' guest hunts. Sign in with your email to keep hunting. It\'s free, and your ghosts, coins and purchases are saved to your account on any phone.' : 'Save your ghosts, coins and purchases to your account. Play on any phone and never lose your progress.') + '</p>' +
+    '<div class="field"><label for="siEmail">Email</label><input id="siEmail" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" value="' + esc((SESS && SESS.email) || P.lastEmail || '') + '"></div>' +
+    '<button class="btn pump big" id="siGo">Email me a sign-in link</button>' +
+    '<div id="siSent" hidden class="stack" style="margin-top:12px"><p class="note">📬 Check your email and tap the link. It opens the game already signed in. If the email shows a 6-digit code, you can type it here instead:</p>' +
+    '<div class="field"><input id="siCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Code from the email"></div><button class="btn ecto" id="siVerify">Sign in with code</button></div>' +
+    '<p class="note">No password needed. We only use your email to sign you in.</p>', sh => {
+      sh.querySelector('#shClose').onclick = closeSheet;
+      const em = sh.querySelector('#siEmail'), go = sh.querySelector('#siGo');
+      go.onclick = async () => {
+        const email = em.value.trim(); if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast('Please enter your email address.'); em.focus(); return; }
+        go.disabled = true; go.textContent = 'Sending…'; P.lastEmail = email; store.set('profile', P);
+        try{ await sbFetch('/auth/v1/otp?redirect_to=' + encodeURIComponent(location.origin + '/'), {method:'POST', auth:false, body:JSON.stringify({email, create_user:true})});
+          AN.track('signin_link_sent'); go.textContent = 'Link sent! Check your email'; sh.querySelector('#siSent').hidden = false;
+          setTimeout(() => { go.disabled = false; go.textContent = 'Send again'; }, 30000);
+        }catch(e){ go.disabled = false; go.textContent = 'Email me a sign-in link'; toast(/rate|seconds/i.test(e.message) ? 'Please wait a minute before asking for another link.' : 'Could not send: ' + e.message, 4500); }
+      };
+      sh.querySelector('#siVerify').onclick = async () => {
+        const token = sh.querySelector('#siCode').value.trim(); if(!token) return;
+        try{ const j = await sbFetch('/auth/v1/verify', {method:'POST', auth:false, body:JSON.stringify({type:'email', email:em.value.trim(), token})}); setSess(j); closeSheet(); afterLogin(); }
+        catch(e){ toast('That code didn\'t work: ' + e.message, 4000); }
+      };
+    });
+}
 /* ===== Verified payments: Stripe tells our server, the game collects what was really paid ===== */
 function playerId(){ if(!P.pid){ P.pid = 'p' + (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2) + Date.now().toString(36)); saveP(); } return P.pid; }
 function goCheckout(link, id){ P.checkoutAt = Date.now(); P.checkoutItem = id; saveP(); location.href = link + (link.includes('?') ? '&' : '?') + 'client_reference_id=' + encodeURIComponent(playerId()); }
@@ -1625,6 +1898,7 @@ function grantItem(id, quiet){
   if(id === 'premium'){ grantPremium(); P.coins += PREMIUM.coins; P.inv.portal = (P.inv.portal || 0) + PREMIUM.tickets; }
   else { const it = SHOP.premium.find(x => x.id === id); if(!it) return false; if(id === 'pass') P.pass = true; else { if(id === 'club') P.club = true; P.coins += it.coins || 0; } }
   P.claimed.push('paid_' + id); saveP(); bumpCoins(); sfx.success(); buzz([40, 30, 80]); AN.track('purchase_complete', {item:id, verified:true});
+  if(sbOn() && !signedIn()) setTimeout(() => toast('Tip: sign in (tap your name, top right) so your purchase is safe on any phone.', 5000), 5200);
   if(!quiet) toast(id === 'premium' ? 'Payment confirmed! Premium active for ' + premDaysLeft() + ' days.' : 'Payment confirmed! +' + ((SHOP.premium.find(x => x.id === id) || {}).coins || 0).toLocaleString() + ' coins', 4500);
   if(P.pendingBuy){ const pb = P.pendingBuy; P.pendingBuy = null; saveP(); setTimeout(() => buyCoinItem(pb), 1200); }
   return true;
@@ -1699,7 +1973,7 @@ function openDetail(sp){
       if(P.jars.some(j => j.sp === sp.key)){ sfx.ensure(); sfx.laugh(); } });
 }
 function openProfile(){
-  openSheet('<div class="hd"><h2>Your lantern</h2><button class="btn ghost" id="shClose">Done</button></div>' +
+  openSheet('<div class="hd"><h2>Your lantern</h2><button class="btn ghost" id="shClose">Done</button></div>' + acctBlock() +
     '<div class="field"><label for="pName">Hunter name</label><input id="pName" maxlength="18" value="' + esc(P.name) + '"></div>' +
     '<div class="field"><label>Fright level</label><div class="seg3" id="pFright">' + ['friendly','spooky','terrifying'].map(f => '<button data-f="' + f + '" aria-pressed="' + (P.fright === f) + '"><b>' + f[0].toUpperCase() + f.slice(1) + '</b><small>' + ({friendly:'Cute ghosts only', spooky:'Cute and creepy', terrifying:'Horror and jump scares'}[f]) + '</small></button>').join('') + '</div></div>' +
     '<div class="row2"><button class="btn ghost" id="pSound">' + (P.sound ? 'Sound: on' : 'Sound: off') + '</button><button class="btn ghost" id="pIntro">Replay intro</button><button class="btn ghost" id="pTrain">Training</button></div>' +
@@ -1707,16 +1981,18 @@ function openProfile(){
     '<div class="row2"><button class="btn ecto" id="pShare">Invite friends</button><button class="btn" id="pInstall">Install the app</button></div>' +
     '<div class="field"><label>Explorer test mode</label><button class="btn ghost" id="pTest">' + (P.testMode ? 'On: tap the map to move' : 'Off') + '</button><p class="note">For testing only. Tap anywhere on the world map to jump there, for example Prague or New York.</p></div>' +
     '<button class="btn ghost" id="pReset">Reset my progress</button><div id="pResetConfirm" hidden class="stack"><p class="note">This clears your vault, XP and journal progress on this device.</p><button class="btn pump" id="pResetYes">Yes, reset everything</button></div>' +
-    '<p class="note">Your progress is saved on this device only. Nothing about you or your location leaves your phone.</p>',
+    '<p class="note">' + (signedIn() ? 'Your progress is saved to your account. Your location never leaves your phone.' : 'Your progress is saved on this device only. Sign in to keep it safe and play on any phone.') + '</p>',
     s => {
       s.querySelector('#shClose').onclick = () => { closeSheet(); render(); };
-      s.querySelector('#pName').onchange = e => { P.name = e.target.value.trim().slice(0, 18); saveP(); renderMe(); };
+      wireAcct(s);
+      s.querySelector('#pName').onchange = async e => { const v = e.target.value.trim().slice(0, 18); if(!sbOn()){ P.name = v; saveP(); renderMe(); return; }
+        const r = await claimName(v); if(r === 'ok'){ toast('You are now @' + P.uname); renderMe(); } else { e.target.value = P.uname || P.name; toast(r === 'taken' ? 'That name is taken. Try another.' : r === 'short' ? 'Use at least 3 letters.' : 'Couldn\'t save the name right now.'); } };
       s.querySelectorAll('#pFright button').forEach(b => b.onclick = () => { P.fright = b.dataset.f; saveP(); AN.track('setting_change', {fright:P.fright}); s.querySelectorAll('#pFright button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); senseSignals(true); });
       s.querySelector('#pSound').onclick = e => { P.sound = !P.sound; saveP(); sfx.ensure(); sfx.setOn(P.sound); e.target.textContent = P.sound ? 'Sound: on' : 'Sound: off'; };
       s.querySelector('#pIntro').onclick = () => { closeSheet(); showIntro(); };
       s.querySelector('#pTrain').onclick = () => { closeSheet(); startTutorial(); };
       s.querySelectorAll('#pDiff button').forEach(b => b.onclick = () => { P.diff = b.dataset.d; saveP(); s.querySelectorAll('#pDiff button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); AN.track('setting_change', {difficulty:P.diff}); });
-      s.querySelector('#pShare').onclick = () => shareApp('profile');
+      s.querySelector('#pShare').onclick = () => { closeSheet(); inviteSheet('profile'); };
       s.querySelector('#pInstall').onclick = () => { closeSheet(); installApp(); };
       s.querySelector('#pTest').onclick = e => { P.testMode = !P.testMode; saveP(); e.target.textContent = P.testMode ? 'On: tap the map to move' : 'Off'; AN.track('test_mode', {on:P.testMode}); renderChip(); };
       s.querySelector('#pReset').onclick = () => { s.querySelector('#pResetConfirm').hidden = false; };
@@ -1728,7 +2004,7 @@ $('#meBtn').onclick = openProfile;
 /* ================= HAUNT LINKS ================= */
 const b64e = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const b64d = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while(s.length % 4) s += '='; return decodeURIComponent(escape(atob(s))); };
-function hauntUrl(spKey, msg){ const base = (CFG.publicUrl || '').trim() || location.href.split('#')[0]; return base + '#h.' + b64e(JSON.stringify({v:1, s:spKey, n:(P.name || 'A friend').slice(0, 18), m:String(msg || '').slice(0, 80), t:Date.now(), r:AN.anonId()})); }
+function hauntUrl(spKey, msg){ const base = shareBase(); return base + '#h.' + b64e(JSON.stringify({v:1, s:spKey, n:(P.name || 'A friend').slice(0, 18), m:String(msg || '').slice(0, 80), t:Date.now(), r:AN.anonId()})); }
 function parseHaunt(){
   const h = location.hash || ''; if(!h.startsWith('#h.')) return null;
   try{ const o = JSON.parse(b64d(h.slice(3))); if(!o || !SP[o.s] || SP[o.s].boss) return null; const la = +o.la, lo = +o.lo; const pinned = Number.isFinite(la) && Number.isFinite(lo) && Math.abs(la) <= 90 && Math.abs(lo) <= 180;
@@ -1760,9 +2036,10 @@ function openHauntSheet(preset){
 $('#hauntBtn').onclick = () => { AN.track('haunt_sheet_open', {from:'tonight'}); openHauntSheet(); };
 $('#huntNearest').onclick = () => { const o = nextTarget(true); if(o){ AN.track('hunt_nearest'); startHunt(o); } };
 $('#portalBtn2').onclick = () => { setTab('map'); setTimeout(openPortalSheet, 300); };
-async function shareApp(from){ const url = (CFG.publicUrl || '').trim() || location.href.split('#')[0]; const text = 'Ghosts are loose all over the world 👻 Come hunt with me in Ghostverse:';
+async function shareApp(from){ const url = shareBase(); const text = 'Ghosts are loose all over the world 👻 Come hunt with me in Ghostverse:';
   try{ if(navigator.share){ await navigator.share({title:'Ghostverse', text, url}); AN.track('app_shared', {from, method:'native'}); return; } }catch(e){ if(e && e.name === 'AbortError') return; } copyText(text + ' ' + url); AN.track('app_shared', {from, method:'copy'}); }
-$('#inviteBtn').onclick = () => shareApp('hunt_tab');
+$('#inviteBtn').onclick = () => inviteSheet('hunt_tab');
+function shareBase(){ const b = ((CFG.publicUrl || '').trim() || (location.origin + location.pathname)).replace(/\/$/, '') + '/'; return P.uname ? b + '?r=' + encodeURIComponent(P.uname) : b; }
 function copyText(t){
   const done = () => toast('Copied. Paste it into WhatsApp, Instagram or a text.');
   try{ navigator.clipboard.writeText(t).then(done, () => selectLink()); }catch(e){ selectLink(); }
@@ -1785,7 +2062,12 @@ $('#storyNext').onclick = () => { const el = $('#storyText'); if(el.textContent.
 $('#storySkip').onclick = () => { AN.track('intro_skip', {page:storyI}); toSetup(); };
 function toSetup(){ clearInterval(typeT); $('#introStory').hidden = true; $('#introSetup').hidden = false; $('#nameIn').value = P.name || ''; $$('#frightSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === P.fright))); }
 $$('#frightSeg button').forEach(b => b.onclick = () => { $$('#frightSeg button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); P.fright = b.dataset.f; if(b.dataset.f === 'terrifying'){ sfx.ensure(); sfx.laugh(); } });
-$('#setupGo').onclick = () => { P.name = $('#nameIn').value.trim().slice(0, 18) || 'Hunter'; P.intro = true; saveP(); signals = null; $('#intro').hidden = true; sfx.success(); AN.track('intro_complete', {fright:P.fright}); setTab('tonight'); if(!P.tutDone) startTutorial(); else setTimeout(afterHome, 600); };
+$('#setupGo').onclick = async () => {
+  const want = cleanName($('#nameIn').value) || 'Hunter' + Math.floor(100 + Math.random() * 900);
+  if(sbOn()){ const b = $('#setupGo'); b.disabled = true; const t0 = b.textContent; b.textContent = 'Checking your name…'; const r = await claimName(want); b.disabled = false; b.textContent = t0;
+    if(r === 'taken' || r === 'short'){ const m = $('#nameMsg'); m.hidden = false; m.innerHTML = r === 'short' ? 'Use at least 3 letters or numbers.' : '<b>' + esc(want) + '</b> is taken. Try: ' + nameIdeas(want).map(x => '<button class="chip" type="button">' + esc(x) + '</button>').join(' ');
+      m.querySelectorAll('.chip').forEach(c => c.onclick = () => { $('#nameIn').value = c.textContent; }); return; } }
+  P.name = P.uname || want; P.intro = true; saveP(); signals = null; $('#intro').hidden = true; sfx.success(); AN.track('intro_complete', {fright:P.fright}); setTab('tonight'); if(!P.tutDone) startTutorial(); else setTimeout(afterHome, 600); };
 
 /* ================= HUNT ENGINE ================= */
 const H = {on:false};
@@ -1891,7 +2173,7 @@ const chgNext = () => { const c = chg(); return c.n >= CHG_MAX ? 0 : Math.max(0,
 const mmss = ms => { const s2 = Math.ceil(ms / 1000); return Math.floor(s2 / 60) + ':' + String(s2 % 60).padStart(2, '0'); };
 function needsCharge(o){ return !(o._retry || o.tutorial || o.boss || o.haunt || o.rush || o.signal === 'story' || o.signal === 'training' || isPremium()); }
 let pendingHunt = null;
-function spendCharge(o){ const c = chg(); if(c.n > 0){ if(c.n >= CHG_MAX) c.t = Date.now(); c.n--; saveP(); AN.track('charge_used', {left:c.n}); renderChg(); return true; } pendingHunt = o; outOfOil(); return false; }
+function spendCharge(o){ const c = chg(); if(c.n > 0){ P.huntsUsed = (P.huntsUsed || 0) + 1; if(c.n >= CHG_MAX) c.t = Date.now(); c.n--; saveP(); AN.track('charge_used', {left:c.n}); renderChg(); return true; } pendingHunt = o; outOfOil(); return false; }
 function refillOil(){ chg().n = CHG_MAX; P.chg.t = Date.now(); saveP(); renderChg(); sfx.success(); buzz([30, 30, 60]); toast('Lantern refilled: ' + CHG_MAX + ' hunts!'); }
 function outOfOil(){
   AN.track('out_of_oil');
@@ -2371,7 +2653,7 @@ function finishCapture(){
   const xp = rw.xp;
   P.caught[sp.key] = (P.caught[sp.key] || 0) + 1; P.total = (P.total || 0) + 1; P.xp += xp; if(sp.boss) P.king = true; saveP();
   const coins = addCoins(rw.coins, 'capture');
-  questEvent('capture', {sp:sp.key, variant:H.variant}); if(sp.boss) questEvent('boss_win'); if(/Rare|Epic|Legendary/.test(sp.rarity)) questEvent('capture_rare'); if(H.opts.place) questEvent('capture_place'); if(H.variant) questEvent('capture_variant'); if(H.portalBg || W.portal) questEvent('portal_capture');
+  questEvent('capture', {sp:sp.key, variant:H.variant}); logCatch(sp); if(sp.boss) questEvent('boss_win'); if(/Rare|Epic|Legendary/.test(sp.rarity)) questEvent('capture_rare'); if(H.opts.place) questEvent('capture_place'); if(H.variant) questEvent('capture_variant'); if(H.portalBg || W.portal) questEvent('portal_capture');
   AN.track(sp.boss ? 'boss_win' : 'capture', {sp:sp.key, rarity:sp.rarity, first:firstTime, secs:Math.round(H.t), source:H.opts.haunt ? 'haunt_link' : H.opts.signal ? 'signal' : 'boss'});
   if(H.opts.haunt){ AN.track('haunt_caught', {sp:sp.key, ref:H.opts.ref || ''}); if(H.opts.world){ P.fh = P.fh.filter(f => f.id !== H.opts.world); } }
   if(H.opts.signal && signals){ signals.list = signals.list.filter(s => s.id !== H.opts.signal); store.set('signals', signals); }
@@ -2409,7 +2691,8 @@ function escapeHunt(){
   $('#resRetry').hidden = false; $('#resRetry').textContent = (sp.boss || H.opts.haunt || H.opts.tutorial) ? 'Try again' : 'Try again · ' + RETRY_COST + ' coins'; H.escaped = true;
   setTimeout(() => { if(H.on) $('#result').hidden = false; }, 700);
 }
-$('#resDone').onclick = () => { endHunt(); setTimeout(maybeOffer, 1200); };
+$('#resDone').onclick = () => { endHunt(); setTimeout(maybeOffer, 1200); setTimeout(maybeInviteNudge, 1600); afterJoin(); };
+function maybeInviteNudge(){ if(!sbOn() || H.on || !$('#sheetWrap').hidden) return; const n = P.total || 0; for(const k of [2, 6, 15]){ if(n >= k && !(P['inv' + k])){ P['inv' + k] = 1; saveP(); AN.track('invite_nudge', {at:n}); inviteSheet('nudge_' + k); return; } } }
 function maybeOffer(){
   if(freeLaunchActive() || !CFG.stripeLink || isPremium() || H.on || !$('#sheetWrap').hidden) return;
   const n = P.total || 0; const key = n >= 12 ? 'offer12' : n >= 3 ? 'offer3' : ''; if(!key || P[key]) return; P[key] = 1; saveP();
@@ -2432,7 +2715,7 @@ $('#resRetry').onclick = () => { const o = Object.assign({}, H.opts); const paid
 $('#resHaunt').onclick = () => { const k = H.sp.key; AN.track('haunt_sheet_open', {from:'result'}); endHunt(); openHauntSheet(k); };
 $('#resShare').onclick = async () => {
   if(!H.photo) return;
-  const link = H.sp.boss ? ((CFG.publicUrl || '').trim() || location.href.split('#')[0]) : hauntUrl(H.sp.key, 'I caught one. Your turn!');
+  const link = H.sp.boss ? (shareBase()) : hauntUrl(H.sp.key, 'I caught one. Your turn!');
   const text = (P.name || 'I') + ' just caught ' + (H.sp.boss ? 'THE HOLLOW KING' : 'a ' + H.sp.name) + ' 👻 Can you catch one? Tap to play: ' + link + ' #Ghostverse';
   try{
     const blob = dataUrlBlob(H.photo); const file = new File([blob], 'ghostverse-' + H.sp.key + '.jpg', {type:'image/jpeg'});
@@ -2857,7 +3140,7 @@ function openReleaseSheet(){
       };
     });
 }
-function releaseUrl(rel){ const base = (CFG.publicUrl || '').trim() || location.href.split('#')[0]; return base + '#h.' + b64e(JSON.stringify({v:2, s:rel.sp, n:(P.name || 'A friend').slice(0, 18), m:rel.msg || '', t:rel.at, r:AN.anonId(), la:rel.lat, lo:rel.lng, pl:rel.name})); }
+function releaseUrl(rel){ const base = shareBase(); return base + '#h.' + b64e(JSON.stringify({v:2, s:rel.sp, n:(P.name || 'A friend').slice(0, 18), m:rel.msg || '', t:rel.at, r:AN.anonId(), la:rel.lat, lo:rel.lng, pl:rel.name})); }
 function shareRelease(rel){
   const url = releaseUrl(rel); const sp = SP[rel.sp];
   const text = (P.name || 'Someone') + ' released a ' + sp.name + ' at ' + rel.name + ' 👻 Go there and catch it within 48 hours:';
@@ -3419,7 +3702,7 @@ function rushCaught(){
   const mult = Math.min(2.5, 1 + RUSH.combo * 0.25) * (VAR[H.variant] ? VAR[H.variant].coins : 1);
   const pts = Math.round(RUSH_PTS[sp.rarity] * mult); RUSH.score += pts; RUSH.caught++;
   rushPop('+' + pts + (RUSH.combo ? '  COMBO ×' + Math.min(2.5, 1 + RUSH.combo * 0.25).toFixed(2).replace(/\.?0+$/, '') : ''));
-  questEvent('capture', {sp:sp.key, variant:H.variant});
+  questEvent('capture', {sp:sp.key, variant:H.variant}); logCatch(sp);
   if(Date.now() < RUSH.end) setTimeout(() => { if(RUSH.on) rushSpawn(); }, 350); else rushEnd();
 }
 function rushPop(t){ const el = document.createElement('div'); el.className = 'rushpop'; el.textContent = t; $('#hunt').appendChild(el); setTimeout(() => el.remove(), 1300); sfx.success(); }
@@ -3436,7 +3719,7 @@ function rushEnd(){
   $('#rushRew').innerHTML = '<span class="rb"><span class="coin"></span>' + coins + '</span><span class="rb xp">+' + xp + ' XP</span>';
   $('#rushRes').hidden = false; if(record || won) sfx.level();
 }
-function rushUrl(){ const base = (CFG.publicUrl || '').trim() || location.href.split('#')[0]; return base + '#r.' + b64e(JSON.stringify({s:RUSH.seed, d:RUSH.dur, sc:RUSH.score, n:(P.name || 'A friend').slice(0, 18), r:AN.anonId()})); }
+function rushUrl(){ const base = shareBase(); return base + '#r.' + b64e(JSON.stringify({s:RUSH.seed, d:RUSH.dur, sc:RUSH.score, n:(P.name || 'A friend').slice(0, 18), r:AN.anonId()})); }
 function parseRush(){ const h = location.hash || ''; if(!h.startsWith('#r.')) return null; try{ const o = JSON.parse(b64d(h.slice(3))); if(!o || typeof o.s !== 'string' || ![1, 3, 5].includes(+o.d)) return null; return {seed:o.s.slice(0, 20), dur:+o.d, score:Math.max(0, Math.floor(+o.sc || 0)), name:String(o.n || 'A friend').slice(0, 18), ref:o.r || ''}; }catch(e){ return null; } }
 $('#rushAgain').onclick = () => { $('#rushRes').hidden = true; startRush(RUSH.dur, RUSH.rival ? RUSH.seed : null, RUSH.rival); };
 $('#rushDone').onclick = () => { $('#rushRes').hidden = true; endHunt(); };
@@ -3521,7 +3804,7 @@ function frame(ts){
     if(H.phase !== 'done' && H.phase !== 'riddle') huntUpdate(dt);
     else { updateParts(dt); [H.main].concat(H.decoys || [], H.minions || []).forEach(e => e && !e.dead && e.g.update(H.t += dt * 0.5)); }
     drawBeam(); R.render(scene, camera);
-  } else if(!document.hidden){ sky.draw(T); if(ts - lastHome > 30000){ lastHome = ts; if(tab === 'tonight') renderNight(); } }
+  } else if(!document.hidden && $('#sheetWrap').hidden && ts - (frame.sk || 0) > 50){ frame.sk = ts; sky.draw(T); if(ts - lastHome > 30000){ lastHome = ts; if(tab === 'tonight') renderNight(); } }
   requestAnimationFrame(frame);
 }
 

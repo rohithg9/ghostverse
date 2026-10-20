@@ -26,6 +26,10 @@ window.GV_CONFIG = {
   // true = coins and Premium are only given after Stripe confirms the payment to our server.
   verifiedPayments: true,
 
+  // Player accounts (Supabase). The publishable key is meant to be public.
+  supabaseUrl: 'https://bhuhuzegusrfdjuksebp.supabase.co',
+  supabaseKey: 'sb_publishable_SUx8_3_T-qJMJxJP7p-5uQ_Z6P51XoA',
+
   // ONE Stripe Payment Link sells "Ghostverse Premium" (World Pass + Ghostverse Pass + 3,000 coins + 5 tickets).
   // In Stripe, set the link's after-payment page to:  https://YOUR-SITE/#paid.premium
   stripeLink: 'https://buy.stripe.com/6oU9AM8MG1lw31f2dz0x200',
