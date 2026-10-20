@@ -25,7 +25,7 @@ export default async (req) => {
     const since = Math.floor(Date.now() / 1000) - 30 * 86400;
     const mine = []; let after = '';
     for(let page = 0; page < 5; page++){
-      const r = await api('checkout/sessions?limit=100&created[gte]=' + since + '&expand[]=data.payment_intent' + (after ? '&starting_after=' + after : ''));
+      const r = await api('checkout/sessions?limit=100&created[gte]=' + since + '&expand[]=data.payment_intent.latest_charge' + (after ? '&starting_after=' + after : ''));
       if(r.error) return json({items:[], error:r.error.message});
       for(const s of r.data || []) if(s.client_reference_id === pid && s.payment_status === 'paid') mine.push(s);
       if(!r.has_more || !r.data.length) break; after = r.data[r.data.length - 1].id;
@@ -34,6 +34,7 @@ export default async (req) => {
     for(const s of mine){
       const pi = s.payment_intent; if(!pi || typeof pi !== 'object') continue;
       if(pi.metadata && pi.metadata.gv_claimed) continue;
+      const ch = pi.latest_charge; if(ch && typeof ch === 'object' && (ch.refunded || ch.amount_refunded > 0 || ch.disputed)) continue;
       const li = await api('checkout/sessions/' + s.id + '/line_items?limit=10');
       const names = (li.data || []).map(x => x.description || '').join(' | ');
       const item = itemFrom(names, s.amount_total); if(!item) continue;
