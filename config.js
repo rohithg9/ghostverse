@@ -26,6 +26,15 @@ window.GV_CONFIG = {
   // true = coins and Premium are only given after Stripe confirms the payment to our server.
   verifiedPayments: true,
 
+  // Amazon Associates (Halloween kit links)
+  amazonTag: 'drrohithg-21',
+  amazonDomain: 'amazon.co.uk',
+
+  // Google AdSense. Leave '' until AdSense approves you, then paste your publisher id (ca-pub-...) and ad unit id.
+  adsenseClient: '',
+  adsenseSlot: '',
+  adTest: false,
+
   // Player accounts (Supabase). The publishable key is meant to be public.
   supabaseUrl: 'https://bhuhuzegusrfdjuksebp.supabase.co',
   supabaseKey: 'sb_publishable_SUx8_3_T-qJMJxJP7p-5uQ_Z6P51XoA',

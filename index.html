@@ -298,7 +298,7 @@ h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.02e
 .sw b{font-size:13.5px}
 .sw[aria-pressed="true"]{border-color:var(--ecto);background:rgba(124,243,224,.07)}
 .earn{display:flex;flex-wrap:wrap;gap:6px}
-.consent{position:fixed;left:0;right:0;bottom:calc(68px + env(safe-area-inset-bottom,0px));z-index:30;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.consent{position:fixed;left:0;right:0;bottom:calc(68px + env(safe-area-inset-bottom,0px));z-index:60;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 .consent .in{max-width:528px;margin:0 auto;background:rgba(30,24,60,.97);border:1px solid var(--line2);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .consent p{margin:0;font-size:13.5px;color:#ddd5f5}
 .daily{display:flex;gap:6px;justify-content:center}
@@ -432,6 +432,9 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
 .traincard{border-radius:20px;padding:16px;border:1px solid rgba(124,243,224,.5);background:radial-gradient(120% 90% at 0% 0%,rgba(124,243,224,.2),transparent 60%),linear-gradient(160deg,#16243a,#0e0c22);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin-bottom:14px}
 .traincard h3{font-family:var(--display);font-size:19px}.traincard p{margin:4px 0 0;color:#cfe;font-size:13.5px}
 .acct{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(124,243,224,.45);background:rgba(124,243,224,.07);border-radius:14px;padding:10px 12px;margin-bottom:12px}.acct b{display:block;font-size:14.5px}.acct small{color:var(--mute);font-size:12.5px;word-break:break-all}.acct.off{border-color:rgba(255,178,74,.5);background:rgba(255,178,74,.07)}
+.adslot{min-height:60px;text-align:center}.adlbl{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+.kitgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.kit{display:flex;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--ink);text-decoration:none;font-size:13.5px;min-width:0}.kit span{font-size:20px}.kit b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oilbuy.ad{background:rgba(124,243,224,.18);color:#bffcf1;border:1px solid rgba(124,243,224,.5);margin-left:0}
 .livecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;width:100%;text-align:left;padding:10px 14px;margin-bottom:12px;border-radius:14px;border:1px solid rgba(124,243,224,.35);background:rgba(124,243,224,.06)}
 .livedot{width:10px;height:10px;border-radius:50%;background:#ff4d6a;box-shadow:0 0 0 0 rgba(255,77,106,.7);animation:livep 1.6s infinite}@keyframes livep{70%{box-shadow:0 0 0 9px rgba(255,77,106,0)}100%{box-shadow:0 0 0 0 rgba(255,77,106,0)}}
 .lvt b{display:block;font-size:14px}.lvt small{display:block;color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -601,6 +604,7 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
         <h2>Play with friends</h2>
         <p class="note" style="font-size:14px;color:#d6cff0">Hide a ghost in a friend's home and dare them to catch it, or invite them to play.</p>
         <div class="row2"><button class="btn ecto" id="hauntBtn">Send a haunting</button><button class="btn pump" id="inviteBtn">Invite · +300 🪙</button></div>
+        <div id="kitSlot"></div>
       </div>
     </div>
   </section>
@@ -626,6 +630,7 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
   <!-- JOURNAL -->
   <section id="tab-journal" hidden>
     <div class="stack"><h2>Quests</h2></div>
+    <div class="section adslot" hidden></div>
     <div class="section" id="worldBox" hidden></div>
     <div class="section" id="boardBox" hidden></div>
     <div class="section" id="campSlot2"></div>
@@ -770,8 +775,8 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
 </div>
 
 <div class="consent" id="consent" hidden><div class="in">
-  <p><b>Help us make Ghostverse better?</b> We'd like to count anonymous play stats, like which ghosts get caught and which country players are in. No names, no exact location.</p>
-  <div class="row2"><button class="btn ghost" id="consentNo">No thanks</button><button class="btn ecto" id="consentYes">Sure</button></div>
+  <p><b>Cookies & ads</b> Ghostverse is free thanks to ads and anonymous play stats. Can we use cookies for these? Say no and the game still works, with less personalised ads. <a href="privacy.html" target="_blank" rel="noopener" style="color:#9ff8ea">Privacy policy</a></p>
+  <div class="row2"><button class="btn ghost" id="consentNo">No thanks</button><button class="btn ecto" id="consentYes">Accept</button></div>
 </div></div>
 
 <div id="toast" style="opacity:0"></div>
@@ -924,7 +929,7 @@ const RIDDLES = [
   {q:'What gets wetter the more it dries?', a:'A towel', w:['A sponge','Rain']},
 ];
 /* Site settings live in config.js on the hosted version (window.GV_CONFIG). */
-const CFG = Object.assign({posthogKey:'', posthogHost:'https://eu.i.posthog.com', publicUrl:'', freeLaunch:true, stripe:{}, maptilerKey:'', mapStyle:'', googleMapsKey:'', mapillaryToken:'', verifiedPayments:false, supabaseUrl:'', supabaseKey:'', stripeLink:'', premiumPrice:'$4.99', stripePublishableKey:''}, window.GV_CONFIG || {});
+const CFG = Object.assign({posthogKey:'', posthogHost:'https://eu.i.posthog.com', publicUrl:'', freeLaunch:true, stripe:{}, maptilerKey:'', mapStyle:'', googleMapsKey:'', mapillaryToken:'', verifiedPayments:false, supabaseUrl:'', supabaseKey:'', adsenseClient:'', adsenseSlot:'', adTest:false, amazonTag:'', amazonDomain:'amazon.co.uk', stripeLink:'', premiumPrice:'$4.99', stripePublishableKey:''}, window.GV_CONFIG || {});
 const COIN = {Common:20, Uncommon:40, Rare:80, Epic:150, Legendary:1000};
 const BEAMS = {violet:['#e2d8ff','#8a6dff'], ecto:['#dafff7','#2fdcc0'], pumpkin:['#ffe4bf','#ff7a1a'], blood:['#ffd3d9','#e0213f'], gold:['#fff4c8','#f0b429']};
 const SHOP = {
@@ -1498,7 +1503,7 @@ function renderJournal(){
   box.innerHTML = '<div class="stack">' + html + '</div>';
 }
 function vaultBadge(){ const t = $('#vaultTab'); if(!t) return; const low = P.jars.some(j => jarEnergy(j) < 0.25); let d = t.querySelector('.dot'); if(low && !d){ d = document.createElement('span'); d.className = 'dot'; t.appendChild(d); } else if(!low && d) d.remove(); }
-function render(){ renderMe(); vaultBadge(); $('#coinNum').textContent = P.coins.toLocaleString(); if(tab === 'map'){ if(W.failed) renderFallback(); else refreshMap(); } else if(tab === 'tonight'){ $('#trainCard').hidden = !!P.tutDone; renderTravelChips(); renderChg(); renderLive(); renderCampCard(); renderNight(); renderFeatured(); renderSignals(); renderQuests(); renderBoss(); } else if(tab === 'armory') renderArmory(); else if(tab === 'vault') renderVault(); else renderJournal(); }
+function render(){ renderMe(); vaultBadge(); $('#coinNum').textContent = P.coins.toLocaleString(); if(tab === 'map'){ if(W.failed) renderFallback(); else refreshMap(); } else if(tab === 'tonight'){ $('#trainCard').hidden = !!P.tutDone; renderTravelChips(); renderChg(); renderLive(); try{ ADS.fill(); }catch(e){} renderRewardBtns(); const kb = $('#kitSlot'); if(kb) kb.innerHTML = kitHtml(); renderCampCard(); renderNight(); renderFeatured(); renderSignals(); renderQuests(); renderBoss(); } else if(tab === 'armory') renderArmory(); else if(tab === 'vault') renderVault(); else renderJournal(); }
 $('#coinBtn').onclick = () => setTab('armory');
 
 /* ================= ARMORY ================= */
@@ -1506,7 +1511,7 @@ try{ if(location.hash === '#paytest'){ localStorage.setItem('gv_paytest', '1'); 
 const isPremium = () => (P.premUntil || 0) > Date.now();
 function canSell(id){ return freeLaunchActive() || !!(CFG.stripe && CFG.stripe[id]); }
 function freeLaunchActive(){ try{ if(localStorage.getItem('gv_paytest') === '1') return false; }catch(e){} return CFG.freeLaunch !== false; }
-function renderArmory(){
+function renderArmory(){ setTimeout(() => { try{ ADS.fill(); }catch(e){} }, 50);
   const l = level(P.xp);
   const owns = id => P.owned.includes(id);
   const priceBtn = (n, id) => '<button class="cbtn' + (P.coins < n ? ' poor' : '') + '" data-buy="' + id + '"><span class="coin"></span>' + n.toLocaleString() + '</button>';
@@ -1515,7 +1520,7 @@ function renderArmory(){
   let h = '<div class="stack"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>The Armory</h2><span class="coins" style="pointer-events:none"><span class="coin"></span>' + P.coins.toLocaleString() + '</span></div>' +
     '<div class="earn"><span class="chip">Catch ghosts: +20 to +1,000</span><span class="chip">Daily lantern bonus</span><span class="chip">Share a photo: +25</span><span class="chip">Haunt a friend: +30</span></div></div>';
   // premium (one Stripe link)
-  if(!freeLaunchActive() && CFG.stripeLink && !isPremium()) h += '<div class="section"><div class="passcard premcard"><div class="eyebrow" style="color:#ffd28a">Best value · one payment</div><h3>Ghostverse Premium</h3><ul><li>∞ Unlimited hunts for 30 days</li><li>🌍 World Pass for 30 days: every place + any street on Earth</li><li>Every night open, double coins, Golden Beam</li><li>3,000 coins + 5 Portal Tickets to keep</li></ul><div class="pricebar"><span class="owned" style="background:none;color:#fff;font-size:22px">' + esc(CFG.premiumPrice || '$4.99') + '</span><button class="btn pump" data-prem="premium">Get Premium</button></div></div></div>';
+  if(!freeLaunchActive() && CFG.stripeLink && !isPremium()) h += '<div class="section"><div class="passcard premcard"><div class="eyebrow" style="color:#ffd28a">Best value · one payment</div><h3>Ghostverse Premium</h3><ul><li>∞ Unlimited hunts for 30 days</li><li>🚫 No ads</li><li>🌍 World Pass for 30 days: every place + any street on Earth</li><li>Every night open, double coins, Golden Beam</li><li>3,000 coins + 5 Portal Tickets to keep</li></ul><div class="pricebar"><span class="owned" style="background:none;color:#fff;font-size:22px">' + esc(CFG.premiumPrice || '$4.99') + '</span><button class="btn pump" data-prem="premium">Get Premium</button></div></div></div>';
   else if(isPremium()) h += '<div class="section"><div class="worldbar own"><b>✨ Premium active · ' + premDaysLeft() + ' days left</b><small>Unlimited hunts, the whole world and every night. Renew any time to add 30 more days.</small>' + (CFG.stripeLink ? '<button class="btn ecto" data-prem="premium">Add 30 days · ' + esc(CFG.premiumPrice || '$4.99') + '</button>' : '') + '</div></div>';
   // pass
   if(canSell('pass')) h += '<div class="section"><div class="passcard"><div class="eyebrow" style="color:#ffc062">Season of the Veil</div><h3>Ghostverse Pass</h3><ul>' +
@@ -1532,6 +1537,8 @@ function renderArmory(){
   if(SHOP.premium.some(pk => pk.coins && !pk.sub && canSell(pk.id))) h += '<div class="section"><div class="eyebrow">Coin packs</div><div class="packs">' + SHOP.premium.filter(pk => pk.coins && !pk.sub && canSell(pk.id)).map(pk => { const got = P.claimed.includes(pk.id) && freeLaunchActive();
     return '<button class="pack" data-prem="' + pk.id + '"' + (got ? ' disabled style="opacity:.55"' : '') + '>' + (pk.tag ? '<span class="tagx">' + pk.tag + '</span>' : '') + '<span class="stackc">' + '<span class="coin"></span>'.repeat(pk.coins >= 4000 ? 3 : pk.coins >= 1500 ? 2 : 1) + '</span><b>' + pk.coins.toLocaleString() + '</b><small>' + (got ? 'Claimed' : freeLaunchActive() ? '<s>' + pk.price + '</s> Free' : pk.price) + '</small></button>'; }).join('') + '</div>' +
     (freeLaunchActive() ? '<p class="note">Everything here is free while Ghostverse launches. Prices show what it will cost later.</p>' : '') + '</div>';
+  h += kitHtml();
+  try{ if(ADS.on()) h += '<div class="section adslot" hidden></div>'; }catch(e){}
   // early night
   if(nextNightPossible){ const nn = effNight() + 1; h += '<div class="section"><div class="item"><div class="ico">' + icon('moon') + '</div><div style="min-width:0"><div class="n">Open night ' + nn + ' early</div><div class="s">Meet "' + esc(NIGHTS[nn - 1].t) + '" tonight instead of tomorrow.</div></div>' + priceBtn(250, 'early') + '</div></div>'; }
   // gear
@@ -1821,6 +1828,52 @@ function inviteSheet(from){
   collectReferrals();
 }
 
+/* ---- ads: AdSense banners on menu screens + Google H5 rewarded ads. Off until configured; never for Premium. ---- */
+const ADS = {
+  loaded:false, ready:false,
+  on(){ return !!CFG.adsenseClient && !isPremium(); },
+  load(){
+    if(this.loaded || !this.on() || P.consent == null) return; this.loaded = true;
+    window.adsbygoogle = window.adsbygoogle || []; if(P.consent === false) window.adsbygoogle.requestNonPersonalizedAds = 1;
+    window.adBreak = window.adConfig = function(o){ window.adsbygoogle.push(o); };
+    const sc = document.createElement('script'); sc.async = true; sc.crossOrigin = 'anonymous';
+    sc.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(CFG.adsenseClient);
+    sc.setAttribute('data-ad-frequency-hint', '45s'); if(CFG.adTest) sc.setAttribute('data-adbreak-test', 'on');
+    document.head.appendChild(sc);
+    try{ adConfig({preloadAdBreaks:'on', sound:'on', onReady:() => { ADS.ready = true; renderRewardBtns(); }}); }catch(e){}
+    setTimeout(() => this.fill(), 1500);
+  },
+  fill(){
+    if(!this.loaded || !CFG.adsenseSlot) return;
+    document.querySelectorAll('.adslot').forEach(el => { if(!this.on()){ el.hidden = true; return; } if(el.dataset.done) return; el.hidden = false; el.dataset.done = 1;
+      el.innerHTML = '<small class="adlbl">Advertisement</small><ins class="adsbygoogle" style="display:block" data-ad-client="' + esc(CFG.adsenseClient) + '" data-ad-slot="' + esc(CFG.adsenseSlot) + '" data-ad-format="auto" data-full-width-responsive="true"' + (CFG.adTest ? ' data-adtest="on"' : '') + '></ins>';
+      try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){} });
+  },
+  reward(name, onReward){
+    if(!this.loaded || typeof adBreak !== 'function'){ toast('No video available right now. Try again in a minute.'); return; }
+    let got = false; AN.track('rewarded_start', {name});
+    adBreak({type:'reward', name, beforeAd:() => { sfx.ambient(false); }, afterAd:() => {},
+      beforeReward:show => show(), adViewed:() => { got = true; }, adDismissed:() => { toast('Watch to the end to get your reward.'); },
+      adBreakDone:info => { AN.track('rewarded_done', {name, status:info && info.breakStatus, got}); if(got) onReward(); else if(info && info.breakStatus !== 'dismissed') toast('No video available right now. Try again later.'); }});
+  }
+};
+const REWARD_DAILY = 5;
+function rewardLeft(){ if(P.rwDay !== todayKey()){ P.rwDay = todayKey(); P.rwN = 0; } return Math.max(0, REWARD_DAILY - (P.rwN || 0)); }
+function renderRewardBtns(){ try{ document.querySelectorAll('[data-reward]').forEach(b => { b.hidden = !(ADS.on() && ADS.ready && rewardLeft() > 0); }); }catch(e){} }
+setTimeout(() => ADS.load(), 2500);
+
+/* ---- Halloween kit: Amazon affiliate links ---- */
+const KIT = [['🎃','Halloween costumes','halloween costume'], ['🕯️','Spooky decorations','halloween decorations'], ['🔦','UV torches','uv torch'], ['📟','Real EMF meters','emf meter ghost'],
+  ['🍬','Trick-or-treat sweets','halloween sweets'], ['🔪','Pumpkin carving kits','pumpkin carving kit'], ['💡','Glow sticks','glow sticks party'], ['🎲','Spooky board games','spooky board game']];
+function kitHtml(){
+  if(!CFG.amazonTag) return '';
+  const u = q => 'https://www.' + (CFG.amazonDomain || 'amazon.co.uk') + '/s?k=' + encodeURIComponent(q) + '&tag=' + encodeURIComponent(CFG.amazonTag);
+  return '<div class="section"><div class="eyebrow">🛒 Ghost hunter\'s Halloween kit</div><p class="note" style="margin-top:4px">Real-world gear for your hunt night.</p><div class="kitgrid">' +
+    KIT.map(k => '<a class="kit" href="' + u(k[2]) + '" target="_blank" rel="sponsored noopener" data-kit="' + esc(k[1]) + '"><span>' + k[0] + '</span><b>' + esc(k[1]) + '</b></a>').join('') +
+    '</div><p class="note" style="font-size:11.5px">As an Amazon Associate, Ghostverse earns from qualifying purchases.</p></div>';
+}
+document.addEventListener('click', e => { const k = e.target.closest && e.target.closest('[data-kit]'); if(k) AN.track('affiliate_click', {item:k.dataset.kit}); });
+
 /* ---- live world activity ---- */
 const myCity = () => { if(W.portal) return W.portal.city; try{ const z = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; const c = z.split('/').pop().replace(/_/g, ' '); return c && !/^(UTC|GMT|Etc)/.test(c) ? c : ''; }catch(e){ return ''; } };
 function logCatch(sp){
@@ -1990,10 +2043,12 @@ function openProfile(){
     '<div class="row2"><button class="btn ecto" id="pShare">Invite friends</button><button class="btn" id="pInstall">Install the app</button></div>' +
     '<div class="field"><label>Explorer test mode</label><button class="btn ghost" id="pTest">' + (P.testMode ? 'On: tap the map to move' : 'Off') + '</button><p class="note">For testing only. Tap anywhere on the world map to jump there, for example Prague or New York.</p></div>' +
     '<button class="btn ghost" id="pReset">Reset my progress</button><div id="pResetConfirm" hidden class="stack"><p class="note">This clears your vault, XP and journal progress on this device.</p><button class="btn pump" id="pResetYes">Yes, reset everything</button></div>' +
+    '<p class="note"><a href="privacy.html" target="_blank" rel="noopener" style="color:#9ff8ea">Privacy policy</a> · <a href="#" id="pCookies" style="color:#9ff8ea">Cookie settings</a></p>' +
     '<p class="note">' + (signedIn() ? 'Your progress is saved to your account. Your location never leaves your phone.' : 'Your progress is saved on this device only. Sign in to keep it safe and play on any phone.') + '</p>',
     s => {
       s.querySelector('#shClose').onclick = () => { closeSheet(); render(); };
       wireAcct(s);
+      s.querySelector('#pCookies').onclick = e => { e.preventDefault(); closeSheet(); $('#consent').hidden = false; };
       s.querySelector('#pName').onchange = async e => { const v = e.target.value.trim().slice(0, 18); if(!sbOn()){ P.name = v; saveP(); renderMe(); return; }
         const r = await claimName(v); if(r === 'ok'){ toast('You are now @' + P.uname); renderMe(); } else { e.target.value = P.uname || P.name; toast(r === 'taken' ? 'That name is taken. Try another.' : r === 'short' ? 'Use at least 3 letters.' : 'Couldn\'t save the name right now.'); } };
       s.querySelectorAll('#pFright button').forEach(b => b.onclick = () => { P.fright = b.dataset.f; saveP(); AN.track('setting_change', {fright:P.fright}); s.querySelectorAll('#pFright button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); senseSignals(true); });
@@ -2189,11 +2244,14 @@ function outOfOil(){
   const show = () => openSheet('<div class="hd"><h2>Your lantern is empty</h2><button class="btn ghost" id="shClose">Close</button></div>' +
     '<div class="oilart"><span class="oilflame"></span></div>' +
     '<p class="lore" style="text-align:center">You\'ve used your free hunts. The lantern refills by itself: <b>+1 hunt every 20 minutes</b>.<br>Next free hunt in <b id="oilT">' + mmss(chgNext()) + '</b></p>' +
+    '<button class="btn ghost big" id="oilAd" data-reward hidden style="margin-bottom:10px">▶ Watch a short video · +3 free hunts</button>' +
     '<button class="btn pump big" id="oilRefill"><span class="coin"></span> Refill ' + CHG_MAX + ' hunts now · ' + REFILL_COST + ' coins</button>' +
     (CFG.stripeLink || freeLaunchActive() ? '<button class="btn ecto big" id="oilPrem" style="margin-top:10px">∞ Unlimited hunts for 30 days · ' + esc(CFG.premiumPrice || '$4.99') + '</button>' : '') +
     '<p class="note" style="text-align:center">Premium also unlocks the whole world and every night for 30 days, plus 3,000 coins to keep.</p>', sh => {
       sh.querySelector('#shClose').onclick = () => { closeSheet(); pendingHunt = null; AN.track('oil_dismiss'); };
       const t = setInterval(() => { const el = $('#oilT'); if(!el){ clearInterval(t); return; } el.textContent = mmss(chgNext()); if(chg().n > 0){ clearInterval(t); closeSheet(); toast('Your lantern has oil again!'); renderChg(); } }, 1000);
+      renderRewardBtns();
+      sh.querySelector('#oilAd').onclick = () => { ADS.reward('lantern_refill', () => { P.rwN = (P.rwN || 0) + 1; const c = chg(); c.n = Math.min(CHG_MAX, c.n + 3); saveP(); renderChg(); clearInterval(t); closeSheet(); sfx.success(); toast('+3 free hunts! Thanks for watching.'); const o = pendingHunt; pendingHunt = null; if(o) setTimeout(() => o.rushStart ? startRush(...o.rushStart) : startHunt(o), 500); }); };
       sh.querySelector('#oilRefill').onclick = () => { clearInterval(t); if(!spend(REFILL_COST)){ closeSheet(); P.pendingBuy = 'refill'; saveP(); notEnough(REFILL_COST, 'refill'); return; } AN.track('oil_refill_coins'); closeSheet(); refillOil(); const o = pendingHunt; pendingHunt = null; if(o) setTimeout(() => o.rushStart ? startRush(...o.rushStart) : startHunt(o), 400); };
       const pr = sh.querySelector('#oilPrem'); if(pr) pr.onclick = () => { clearInterval(t); AN.track('premium_click', {from:'oil'}); closeSheet(); premiumClick('premium'); };
     });
@@ -2201,8 +2259,10 @@ function outOfOil(){
 }
 function renderChg(){ const el = $('#chgLine'); if(!el) return;
   if(isPremium()){ el.innerHTML = '<span class="oilchip prem">∞ Premium · unlimited hunts</span><small>' + premDaysLeft() + ' days left</small>'; return; }
-  const c = chg(); el.innerHTML = '<span class="oilchip' + (c.n <= 2 ? ' low' : '') + '">🔥 ' + c.n + '/' + CHG_MAX + ' free hunts</span>' + (c.n < CHG_MAX ? '<small>+1 in ' + mmss(chgNext()) + '</small>' : '<small>Lantern full</small>') + (c.n <= 3 ? '<button class="oilbuy" id="oilBuyBtn">Refill</button>' : '');
-  const b = $('#oilBuyBtn'); if(b) b.onclick = () => { AN.track('oil_refill_click', {from:'hunt_tab'}); outOfOil(); }; }
+  const c = chg(); el.innerHTML = '<span class="oilchip' + (c.n <= 2 ? ' low' : '') + '">🔥 ' + c.n + '/' + CHG_MAX + ' free hunts</span>' + (c.n < CHG_MAX ? '<small>+1 in ' + mmss(chgNext()) + '</small>' : '<small>Lantern full</small>') + (c.n <= 3 ? '<button class="oilbuy" id="oilBuyBtn">Refill</button>' : '') + '<button class="oilbuy ad" data-reward hidden id="adCoins">▶ +40 🪙</button>';
+  const b = $('#oilBuyBtn'); if(b) b.onclick = () => { AN.track('oil_refill_click', {from:'hunt_tab'}); outOfOil(); };
+  const ac = $('#adCoins'); if(ac) ac.onclick = () => ADS.reward('coins', () => { P.rwN = (P.rwN || 0) + 1; addCoins(40, 'rewarded_ad'); toast('+40 coins! Thanks for watching.'); renderChg(); });
+  renderRewardBtns(); }
 setInterval(() => { if(tab === 'tonight' && !H.on) renderChg(); }, 15000);
 function startHunt(opts){
   if(!R){ toast('This browser can\'t show 3D. Try Chrome or Safari.'); return; }
@@ -3858,13 +3918,13 @@ function afterHome(){
   if(P.premUntil && !freeLaunchActive() && CFG.stripeLink){ const left = (P.premUntil - Date.now()) / DAY;
     if(left > 0 && left <= 3 && P.premWarn !== Math.ceil(left)){ P.premWarn = Math.ceil(left); saveP(); toast('Your Premium ends in ' + Math.ceil(left) + (Math.ceil(left) === 1 ? ' day' : ' days') + '. Renew in the Armory to keep unlimited hunts.', 5000); }
     else if(left <= 0 && !P.premEndSeen){ P.premEndSeen = P.premUntil; saveP(); AN.track('premium_expired_seen'); setTimeout(() => premiumBundleSheet('expired'), 800); return; } }
-  if(AN.enabled() && P.consent == null) $('#consent').hidden = false;
+  if((AN.enabled() || CFG.adsenseClient) && P.consent == null) $('#consent').hidden = false;
   if(tab === 'map' && !W.pos) startGeo();
   if(P.daily.last === todayKey() && P.camp.seen < P.camp.ch && CAMPAIGN[P.camp.ch] && $('#sheetWrap').hidden) showKeeper(CAMPAIGN[P.camp.ch]);
   dailyBonus();
 }
-$('#consentYes').onclick = () => { $('#consent').hidden = true; AN.setConsent(true); };
-$('#consentNo').onclick = () => { $('#consent').hidden = true; AN.setConsent(false); };
+$('#consentYes').onclick = () => { $('#consent').hidden = true; AN.setConsent(true); ADS.load(); };
+$('#consentNo').onclick = () => { $('#consent').hidden = true; AN.setConsent(false); ADS.load(); };
 if(P.intro && !incoming) setTimeout(afterHome, 900);
 requestAnimationFrame(frame);
 })();
