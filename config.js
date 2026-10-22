@@ -31,7 +31,7 @@ window.GV_CONFIG = {
   amazonDomain: 'amazon.co.uk',
 
   // Google AdSense. Leave '' until AdSense approves you, then paste your publisher id (ca-pub-...) and ad unit id.
-  adsenseClient: '',
+  adsenseClient: 'ca-pub-1136850550476024',
   adsenseSlot: '',
   adTest: false,
 
