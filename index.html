@@ -3577,8 +3577,9 @@ async function findPano(lat, lng){
   const key = lat.toFixed(4) + ',' + lng.toFixed(4); if(panoCache[key]) return panoCache[key];
   let best = null;
   // all sizes are asked at once; the closest size with a good open-air photo wins
-  const reqs = [0.0012, 0.004, 0.009, 0.022].map(d => findPanoIn(lat, lng, d));   // the last size reaches the nearest road in the countryside
+  const reqs = [0.0012, 0.004, 0.009, 0.022, 0.045].map(d => findPanoIn(lat, lng, d));   // 360° photos first, out to ~5 km (they fill the whole view)
   for(const r of reqs){ const l = await r; if(!l.length) continue; const v = await pickLit(l); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
+  if(best && best._sc >= 0.35) return (panoCache[key] = best);   // any open-air 360° beats a flat photo
   const fl = await findFlat(lat, lng); if(fl.length){ const v = await pickLit(fl); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
   if(best && best._sc >= 0.35) return (panoCache[key] = best);   // a bit dim but still outdoors
   return null;   // only dark tunnel/indoor shots here: better the portal mist than a wrong place
@@ -3638,7 +3639,8 @@ function showPano(pn){
     if(!pn.blur) pn.blur = blurTex(pn.tex);
     if(pn.blur){ if(!blurSphere){ const g = new THREE.SphereGeometry(52, 32, 16); g.scale(-1, 1, 1); blurSphere = new THREE.Mesh(g, new THREE.MeshBasicMaterial({map:pn.blur, fog:false, depthWrite:false})); blurSphere.renderOrder = -11; scene.add(blurSphere); }
       else if(blurSphere.material.map !== pn.blur){ blurSphere.material.map = pn.blur; blurSphere.material.needsUpdate = true; } }
-    if(!flatPanel){ const g = new THREE.SphereGeometry(40, 40, 20, Math.PI - 0.95, 1.9, Math.PI / 2 - 0.62, 1.24); g.scale(-1, 1, 1); flatPanel = new THREE.Mesh(g, new THREE.MeshBasicMaterial({map:pn.tex, fog:false, depthWrite:false, side:THREE.DoubleSide})); flatPanel.renderOrder = -10; scene.add(flatPanel); }
+    if(!pn.wrapped){ pn.wrapped = true; pn.tex.wrapS = THREE.MirroredRepeatWrapping; pn.tex.repeat.x = 4; pn.tex.offset.x = -1.5; pn.tex.needsUpdate = true; }   // photo, mirror, photo, mirror: a seamless full circle
+    if(!flatPanel){ const g = new THREE.SphereGeometry(40, 64, 20, 0, Math.PI * 2, Math.PI / 2 - 0.62, 1.24); g.scale(-1, 1, 1); flatPanel = new THREE.Mesh(g, new THREE.MeshBasicMaterial({map:pn.tex, fog:false, depthWrite:false, side:THREE.DoubleSide})); flatPanel.renderOrder = -10; scene.add(flatPanel); }
     else if(flatPanel.material.map !== pn.tex){ flatPanel.material.map = pn.tex; flatPanel.material.needsUpdate = true; }
     const cy0 = camYawPitch()[0]; flatPanel.rotation.y = cy0 - Math.PI / 2; H.flatYaw = cy0; flatPanel.visible = true; PANO_SHOWN = pn; pn.t = Date.now();
     if(blurSphere){ blurSphere.rotation.y = flatPanel.rotation.y; blurSphere.visible = !!pn.blur; }
