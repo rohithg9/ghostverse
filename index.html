@@ -383,7 +383,9 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
 .mk-in.v-golden img{filter:sepia(1) saturate(5) hue-rotate(-12deg) brightness(1.12) drop-shadow(0 0 10px #ffc83a)!important}
 .mk-in.v-giant,.mk-in.v-giant img{width:60px;height:60px}.mk-in.v-tiny,.mk-in.v-tiny img{width:34px;height:34px}
 .portalchip{color:#ffd28a;border-color:rgba(255,190,90,.5)!important}
-#portalMap{position:absolute;inset:0}
+#portalMap{position:absolute;inset:0;pointer-events:none;background:#9fc3f0}
+#portalMap #map{position:absolute;inset:0;width:100%;height:100%}
+#map.s3 .maplibregl-marker,#map.s3 .maplibregl-ctrl{display:none!important}
 .ghp .lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:#c9b6ff;margin-bottom:4px}
 #ghpBar{background:linear-gradient(90deg,#9d7dff,#e2d8ff)}
 #dmgLayer{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
@@ -550,19 +552,21 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
 
   <!-- TONIGHT -->
   <section id="tab-tonight" hidden>
-    <button class="livecard" id="liveCard" hidden><span class="livedot"></span><span class="lvt"><b id="lvHead">Live around the world</b><small id="lvFeed"></small></span></button>
-    <div class="traincard" id="trainCard" hidden><div><div class="eyebrow" style="color:#9ff8ea">New here?</div><h3>Take the 1-minute training</h3><p>The Lantern Keeper shows you how to find and catch your first ghost, step by step.</p></div><button class="btn ecto" id="trainBtn">Start</button></div>
-    <div id="campSlot" style="margin-bottom:14px"></div>
     <div class="huntHero">
       <div class="sense">
         <div class="radar" aria-hidden="true"></div>
-        <div class="t"><b id="senseHead">3 ghosts around you</b><span>They're hiding right where you are: this room, your office, the garden. Hold up your phone and hunt.</span></div>
+        <div class="t"><b id="senseHead">3 ghosts around you</b><span id="senseSub">They're hiding right where you are: this room, your office, the garden. Hold up your phone and hunt.</span></div>
       </div>
       <button class="btn big pump" id="huntNearest">Hunt the nearest ghost</button>
     </div>
+    <div class="traincard" id="trainCard" hidden><div><div class="eyebrow" style="color:#9ff8ea">New here?</div><h3>Take the 1-minute training</h3><p>The Lantern Keeper shows you how to find and catch your first ghost, step by step.</p></div><button class="btn ecto" id="trainBtn">Start</button></div>
     <div class="section">
       <div class="stack" id="signals"></div>
       <div class="chgline" id="chgLine"></div>
+    </div>
+    <div id="campSlot" class="section"></div>
+    <button class="livecard" style="margin-top:14px" id="liveCard" hidden><span class="livedot"></span><span class="lvt"><b id="lvHead">Live around the world</b><small id="lvFeed"></small></span></button>
+    <div class="section">
       <div class="row2"><button class="btn ghost" id="senseBtn">Sense again</button><button class="btn ghost" id="portalBtn2">Open a Portal</button></div>
       <button class="travelcard" id="travelCard"><span class="tcglow"></span><span class="tct"><span class="eyebrow" style="color:#ffd28a">🌀 Portals</span><b>Travel anywhere. Hunt there.</b><small>Stand in front of the Eiffel Tower, the Taj Mahal or Times Square, right from your sofa, and catch the ghosts that live there.</small><span class="tcchips" id="tcChips"></span></span></button>
       <button class="goout" id="goOut"><span>🗺️</span><span><b>Going out?</b><small>Every street on Earth is haunted. Open the map to find ghosts, named hauntings and supply caches near you.</small></span></button>
@@ -1455,7 +1459,10 @@ function senseSignals(force, lure){
 function renderSignals(){
   senseSignals(false);
   const list = (signals && signals.list || []).filter(s => SP[s.sp] && allowed(SP[s.sp]));
-  $('#senseHead').textContent = list.length ? list.length + ' ghost' + (list.length > 1 ? 's' : '') + ' around you' : 'The air is still';
+  const first = !(P.stats && P.stats.catches);
+  $('#senseHead').textContent = !list.length ? 'The air is still' : first ? 'A ghost is hiding near you right now' : list.length + ' ghost' + (list.length > 1 ? 's' : '') + ' around you';
+  $('#senseSub').textContent = first ? 'Right here: in this room, at your desk, out in the garden. Hold your phone up like a camera and look around. Your first catch takes about a minute.' : 'They\'re hiding right where you are: this room, your office, the garden. Hold up your phone and hunt.';
+  $('#huntNearest').textContent = first ? 'Catch my first ghost 👻' : 'Hunt the nearest ghost';
   $('#huntNearest').disabled = !list.length;
   $('#signals').innerHTML = '';
   list.forEach(s => {
@@ -2099,7 +2106,10 @@ function openHauntSheet(preset){
     });
 }
 $('#hauntBtn').onclick = () => { AN.track('haunt_sheet_open', {from:'tonight'}); openHauntSheet(); };
-$('#huntNearest').onclick = () => { const o = nextTarget(true); if(o){ AN.track('hunt_nearest'); startHunt(o); } };
+$('#huntNearest').onclick = () => {
+  if(!(P.stats && P.stats.catches)){ senseSignals(false); const l = (signals && signals.list || []).filter(x => SP[x.sp] && allowed(SP[x.sp])).sort((a, b) => SP[a.sp].capT - SP[b.sp].capT);   // first catch: the easiest ghost
+    if(l[0]){ AN.track('hunt_first'); startHunt({sp:l[0].sp, signal:l[0].id, variant:''}); return; } }
+  const o = nextTarget(true); if(o){ AN.track('hunt_nearest'); startHunt(o); } };
 $('#portalBtn2').onclick = () => { setTab('map'); setTimeout(openPortalSheet, 300); };
 async function shareApp(from){ const url = shareBase(); const text = 'Ghosts are loose all over the world 👻 Come hunt with me in Ghostverse:';
   try{ if(navigator.share){ await navigator.share({title:'Ghostverse', text, url}); AN.track('app_shared', {from, method:'native'}); return; } }catch(e){ if(e && e.name === 'AbortError') return; } copyText(text + ' ' + url); AN.track('app_shared', {from, method:'copy'}); }
@@ -2543,6 +2553,8 @@ function huntUpdate(dt){
   if(H.phase === 'fight'){ $('#timerBar').style.transform = 'scaleX(' + clamp(H.timeLeft / (sp.time * (1 + (1 - H.df) * 0.6)), 0, 1) + ')'; if(!H.boss){ $('#ghpWrap').hidden = false; $('#ghpBar').style.transform = 'scaleX(' + (1 - H.progress) + ')'; $('#ghpTxt').textContent = Math.ceil((1 - H.progress) * 100) + '%'; } }
   else $('#ghpWrap').hidden = true;
   updateBigEmf(cyaw, cpitch);
+  if(H.portalBg === 'map3d' && S3.on && W.map){ const hb = ((-cyaw / D2R) % 360 + 360) % 360, hp = clamp(80 + cpitch / D2R, 40, 85);
+    if(Math.abs(((hb - S3.b + 540) % 360) - 180) > 0.4 || Math.abs(hp - S3.p) > 0.6){ S3.b = hb; S3.p = hp; try{ W.map.jumpTo({bearing:hb, pitch:hp}); }catch(e){} } }
   if(H.portalBg === 'sv' && SV){ try{ SV.setPov({heading:((-cyaw / D2R) % 360 + 360) % 360, pitch:clamp(cpitch / D2R, -80, 80)}); }catch(e){} }
   if(H.boss){ $('#hpBar').style.transform = 'scaleX(' + H.hp + ')'; $('#hpTxt').textContent = Math.ceil(H.hp * 100) + '%'; }
   updateReticle(); updateBubble(); if(H.tut) tutTick(dt);
@@ -2564,7 +2576,7 @@ function pickLeg(e, cyaw, cpitch, speedDeg){
   else if(r < 0.86 && !H.boss){ ty = e.yaw + rnd(-25, 25) * D2R; tp = e.pitch * 0.5 + rnd(-6, 8) * D2R; td = Math.min(17, e.dist + rnd(5, 8)); leg = 'retreat'; }
   else { ty = e.yaw + (Math.random() < 0.5 ? -1 : 1) * rnd(100, 170) * D2R; tp = e.pitch + rnd(-20, 25) * D2R; leg = 'orbit'; }
   if(H.portalBg === 'flat' && !H.boss){ ty = H.flatYaw + clamp(wrapPI(ty - H.flatYaw), -0.75, 0.75); tp = clamp(tp, -12 * D2R, 20 * D2R); leg = 'dart'; }
-  if(H.portalBg === 'photo' && !H.boss){ if(leg === 'swoop' || leg === 'dive') { ty = e.yaw + (Math.random() < 0.5 ? -1 : 1) * rnd(70, 150) * D2R; leg = 'orbit'; } tp = clamp(tp, -8 * D2R, 28 * D2R); }   // keep ghosts on the skyline so you sweep across the scenery
+  if((H.portalBg === 'photo' || H.portalBg === 'map3d') && !H.boss){ if(leg === 'swoop' || leg === 'dive') { ty = e.yaw + (Math.random() < 0.5 ? -1 : 1) * rnd(70, 150) * D2R; leg = 'orbit'; } tp = clamp(tp, -8 * D2R, 28 * D2R); }   // keep ghosts on the skyline so you sweep across the scenery
   if(H.boss && !e.minion){ tp = clamp(tp, -0.15, 0.95); td = 9; }
   else if(leg === 'retreat') td = clamp(td, 6, 17); else td = clamp(td + rnd(-2, 2), 4.6, Math.max(9, e.dist));
   e.ty = ty; e.tp = clamp(tp, PITCH_MIN, PITCH_MAX); e.td = td; e.leg = leg;
@@ -2952,7 +2964,7 @@ const LANDMARKS = [
   ['Lakefront', 'Queenstown', -45.0312, 168.6626, 'frost'], ['Basilica Cistern', 'Istanbul', 41.0084, 28.9779, 'paper'], ['Times Square', 'New York', 40.7580, -73.9855, 'sock'],
 ];
 function landmarkItems(){ const d = dayKey(); const out = [];
-  LANDMARKS.forEach((l, i) => { const sp = SP[l[4]] && allowed(SP[l[4]]) && unlocked(SP[l[4]]) ? l[4] : 'wisp'; out.push({kind:'landmark', id:'L' + i + '_' + d, sp, lat:l[2], lng:l[3], name:l[0], city:l[1], exp:endOfDay()});
+  LANDMARKS.forEach((l, i) => { const sp = SP[l[4]] && allowed(SP[l[4]]) && unlocked(SP[l[4]]) ? l[4] : starterSp(l[0]); out.push({kind:'landmark', id:'L' + i + '_' + d, sp, lat:l[2], lng:l[3], name:l[0], city:l[1], exp:endOfDay()});
     // a crowd of extra spirits drawn to every famous place
     const r = mulberry(hash32('lm|' + i + '|' + d)); const pl = pool(regionAt(l[2], l[3]));
     for(let k = 0; k < 3; k++){ const s2 = pickW(r, pl, true); if(s2) out.push({kind:'wild', id:'L' + i + 'x' + k + '_' + d, sp:s2.key, lat:l[2] + (r() - 0.5) * 0.0024, lng:l[3] + (r() - 0.5) * 0.0036, exp:endOfDay(), variant:r() < 0.12 ? 'giant' : ''}); } });
@@ -3434,14 +3446,13 @@ async function dropPortalAt(lat, lng){
   await new Promise(r => setTimeout(r, 900));   // let the photo dots load at the new zoom
   const img = CFG.mapillaryToken ? await findPano(lat, lng) : null;
   W.pickBusy = false; W.pickPortal = false; renderChip();
-  if(CFG.mapillaryToken && !img){ box0.innerHTML = '<div class="mc"><div class="pic" style="font-size:34px;display:grid;place-items:center">🌫️</div><div class="t"><b>No street photos here yet</b><span>Try a town, a main road or a famous spot nearby.</span></div><button class="x" id="mcX" aria-label="Close">✕</button></div><div class="row2"><button class="btn" id="dpAgain">Pick another spot</button></div>';
-    box0.querySelector('#mcX').onclick = () => { box0.hidden = true; }; box0.querySelector('#dpAgain').onclick = () => { box0.hidden = true; W.pickPortal = true; renderChip(); }; AN.track('drop_portal_nophoto'); return; }
+  if(CFG.mapillaryToken && !img) AN.track('drop_portal_nophoto');   // still fine: the hunt uses the 3D satellite street view
   if(img){ lng = img.geometry.coordinates[0]; lat = img.geometry.coordinates[1]; }   // snap to the exact spot the photo was taken
   let name = 'This street', city = '';
   try{ const r = await fetch('https://api.maptiler.com/geocoding/' + lng.toFixed(5) + ',' + lat.toFixed(5) + '.json?limit=1&key=' + encodeURIComponent(CFG.maptilerKey)); const js = await r.json(); const f = js.features && js.features[0];
     if(f){ name = f.text || name; const ctx = (f.context || []).map(c => c.text); city = ctx.find(Boolean) || (f.place_name || '').split(',').slice(1, 2).join('').trim(); } }catch(e){}
   const box = $('#mCard'); box.hidden = false;
-  box.innerHTML = (img ? '<div class="teaser on" style="height:110px;margin-bottom:8px;background-image:url(&quot;' + esc(img.thumb_1024_url || img.thumb_2048_url) + '&quot;)"></div>' : '') + '<div class="mc"><div class="pic" style="font-size:34px;display:grid;place-items:center">🌀</div><div class="t"><b>' + esc(name) + '</b><span>' + esc(city || 'Somewhere on Earth') + '</span><span class="mono dist">Open a portal here?</span></div><button class="x" id="mcX" aria-label="Close">✕</button></div><div class="row2"><button class="btn ghost" id="dpNo">Pick again</button><button class="btn" id="dpGo">Open portal</button></div>';
+  box.innerHTML = (img ? '<div class="teaser on" style="height:110px;margin-bottom:8px;background-image:url(&quot;' + esc(img.thumb_1024_url || img.thumb_2048_url) + '&quot;)"></div>' : '') + '<div class="mc"><div class="pic" style="font-size:34px;display:grid;place-items:center">🌀</div><div class="t"><b>' + esc(name) + '</b><span>' + esc(city || 'Somewhere on Earth') + '</span><span class="mono dist">' + (img ? 'Open a portal here?' : '🛰️ 3D satellite view · no street photos yet') + '</span></div><button class="x" id="mcX" aria-label="Close">✕</button></div><div class="row2"><button class="btn ghost" id="dpNo">Pick again</button><button class="btn" id="dpGo">Open portal</button></div>';
   box.querySelector('#mcX').onclick = () => { box.hidden = true; }; box.querySelector('#dpNo').onclick = () => { box.hidden = true; W.pickPortal = true; renderChip(); };
   box.querySelector('#dpGo').onclick = () => { box.hidden = true; W.pickPortal = false; if(W.portal) endPortal(true, true);
     const pool2 = SPECIES.filter(x => !x.boss && unlocked(x) && allowed(x)); const sp = pool2[Math.floor(Math.random() * pool2.length)] || SP.wisp;
@@ -3553,14 +3564,14 @@ async function findPano(lat, lng){
   if(near){ const d = await mlyGet('https://graph.mapillary.com/' + near.id + '?access_token=' + tok + '&fields=id,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at', 8000);
     if(d && (d.thumb_1024_url || d.thumb_2048_url)){ if(!d.geometry) d.geometry = {type:'Point', coordinates:[near.lng, near.lat]}; return (panoCache[key] = d); } }
   // all sizes are asked at once; the closest size that has a photo wins
-  const reqs = [0.0012, 0.004, 0.012, 0.03, 0.045].map(d => findPanoIn(lat, lng, d));
+  const reqs = [0.0012, 0.004, 0.009].map(d => findPanoIn(lat, lng, d));
   for(const r of reqs){ const v = await r; if(v) return (panoCache[key] = v); }
   const f = await findFlat(lat, lng); if(f) return (panoCache[key] = f);
   return null;
 }
 /* when no 360° photo exists, a normal street photo still shows the real place */
 async function findFlat(lat, lng){
-  for(const d of [0.002, 0.008, 0.03]){
+  for(const d of [0.002, 0.006]){
     const bbox = [lng - d, lat - d, lng + d, lat + d].map(v => v.toFixed(6)).join(',');
     const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at,width,height&is_pano=false&limit=12&bbox=' + bbox, 9000);
     const list = (js && js.data || []).filter(i => i.geometry && (i.thumb_2048_url || i.thumb_1024_url) && (!i.width || i.width >= i.height));
@@ -3630,11 +3641,14 @@ function streetPhoto(){
   if(panoSphere) panoSphere.visible = false; if(flatPanel) flatPanel.visible = false; $('#portalMist').hidden = true; env.visible = false; $('#panoCredit').hidden = true;   // never show the last place's photo
   const vp = H.opts && H.opts.lat != null ? [H.opts.lat, H.opts.lng] : portalView();   // the photo of THIS ghost's exact spot
   const ready = PANOS.get(panoKey(vp[0], vp[1])); if(ready && ready.tex){ showPano(ready); return; }
-  $('#portalLoad').hidden = false; $('#portalLoadCity').textContent = (H.opts && H.opts.place) || W.portal.city;
+  const quick = street3D(vp[0], vp[1]);
+  if(!quick){ $('#portalLoad').hidden = false; $('#portalLoadCity').textContent = (H.opts && H.opts.place) || W.portal.city; }
+  else hint('You are in ' + ((H.opts && H.opts.place) || W.portal.city) + '. Look around! Street photos are loading…');
   Promise.race([loadPortalPano(vp[0], vp[1]), new Promise(r => setTimeout(() => r(null), 20000))]).then(pn => {
     if(tok !== streetPhoto.n || !H.on || !H.portalBg) return;
     $('#portalLoad').hidden = true;
-    if(pn && pn.tex) showPano(pn);
+    if(pn && pn.tex){ street3DOff(); showPano(pn); }
+    else if(H.portalBg === 'map3d' || street3D(vp[0], vp[1])){ hint('You are standing in ' + ((H.opts && H.opts.place) || W.portal.city) + '. No street photos here yet, so this is the satellite view. The ghost is here!'); AN.track('portal_3d', {city:W.portal && W.portal.city}); }
     else { H.portalBg = 'mist'; $('#portalMist').hidden = false; scene.fog = null; hint('No street photo of this exact spot yet. The ghost is still here!'); AN.track('portal_mist', {lat:vp[0], lng:vp[1]}); }
   });
 }
@@ -3644,12 +3658,45 @@ function portalBackdrop(){
   const el = $('#portalMap'); el.hidden = true;
   if(!W.portal) return false;
   const city = W.portal.city;
-  if(CFG.mapillaryToken){ streetPhoto(); return H.portalBg === 'photo' ? 'photo' : 'loading'; }
+  if(CFG.mapillaryToken){ H.portalBg = false; streetPhoto(); return H.portalBg || 'loading'; }
   try{ if(!cityEnv || cityKey !== city) buildCityEnv(city); cityEnv.visible = true; }catch(e){ return false; }
   if(CFG.googleMapsKey && W.portal.real) streetView(H.opts.lat || W.portal.lat, H.opts.lng || W.portal.lng);
   return 'city';
 }
-function hidePortalBg(){ if(flatPanel) flatPanel.visible = false; streetPhoto.n++; $('#portalLoad').hidden = true; $('#portalMist').hidden = true; if(panoSphere) panoSphere.visible = false; $('#panoCredit').hidden = true; if(cityEnv) cityEnv.visible = false; if(SV){ try{ SV.setVisible(false); }catch(e){} } $('#portalMap').hidden = true; }
+/* Street-level 3D view of the exact spot (satellite ground + real building shapes), drawn by the game's own map.
+   No second map is created, so it stays light on phones. Used instantly while a photo loads, and whenever no photo exists. */
+const S3 = {on:false};
+function satLayer(on){
+  const m = W.map; if(!m) return;
+  try{
+    if(on && !m.getSource('gv-sat')) m.addSource('gv-sat', {type:'raster', tiles:['https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=' + encodeURIComponent(CFG.maptilerKey)], tileSize:512, maxzoom:20, attribution:'© MapTiler © Maxar'});
+    if(on && !m.getLayer('gv-sat')){ const firstSym = (m.getStyle().layers || []).find(l => l.type === 'symbol'); m.addLayer({id:'gv-sat', type:'raster', source:'gv-sat', paint:{'raster-opacity':1}}, m.getLayer('gv-3d') ? 'gv-3d' : (firstSym && firstSym.id)); }
+    if(m.getLayer('gv-sat')) m.setLayoutProperty('gv-sat', 'visibility', on ? 'visible' : 'none');
+  }catch(e){}
+}
+function street3D(lat, lng){
+  const m = W.map; if(!m || !W.ready || !H.on) return false;
+  try{
+    const el = m.getContainer();
+    if(!S3.on){ S3.home = el.parentNode; S3.next = el.nextSibling; S3.prev = {center:m.getCenter(), zoom:m.getZoom(), pitch:m.getPitch(), bearing:m.getBearing()};
+      $('#portalMap').appendChild(el); el.classList.add('s3'); S3.on = true;
+      try{ m.setMaxPitch(85); }catch(e){} satLayer(true); add3D();
+      try{ if(m.getLayer('mly-pano')) m.setLayoutProperty('mly-pano', 'visibility', 'none'); }catch(e){}
+      try{ m.setSky({'sky-color':'#6fa6ee', 'horizon-color':'#ffd9b8', 'sky-horizon-blend':0.5, 'horizon-fog-blend':0.7, 'fog-color':'#e4e9f2', 'fog-ground-blend':0.35}); }catch(e){} }
+    $('#portalMap').hidden = false; m.resize();
+    S3.b = ((-camYawPitch()[0] / D2R) % 360 + 360) % 360; S3.p = 80;
+    m.jumpTo({center:[lng, lat], zoom:19, pitch:S3.p, bearing:S3.b});
+    H.portalBg = 'map3d'; env.visible = false; scene.fog = null; $('#portalMist').hidden = true; $('#portalLoad').hidden = true; $('#panoCredit').hidden = true;
+    return true;
+  }catch(e){ AN.track('street3d_fail'); return false; }
+}
+function street3DOff(){
+  if(!S3.on || !W.map) return; S3.on = false; const m = W.map, el = m.getContainer();
+  try{ el.classList.remove('s3'); S3.home.insertBefore(el, S3.next && S3.next.parentNode === S3.home ? S3.next : null); satLayer(false); try{ m.setSky(null); }catch(e){} m.setMaxPitch(70);
+    m.resize(); m.jumpTo({center:S3.prev.center, zoom:S3.prev.zoom, pitch:Math.min(70, S3.prev.pitch), bearing:S3.prev.bearing}); mlyVis(); }catch(e){}
+  $('#portalMap').hidden = true;
+}
+function hidePortalBg(){ street3DOff(); if(flatPanel) flatPanel.visible = false; streetPhoto.n++; $('#portalLoad').hidden = true; $('#portalMist').hidden = true; if(panoSphere) panoSphere.visible = false; $('#panoCredit').hidden = true; if(cityEnv) cityEnv.visible = false; if(SV){ try{ SV.setVisible(false); }catch(e){} } $('#portalMap').hidden = true; }
 
 /* ================= PROGRESSION: story campaign, achievements ================= */
 const CAMPAIGN = [
@@ -3859,7 +3906,9 @@ function tutTick(){
   if(t.step === 0 && H.main){ H.main.yaw = camYawPitch()[0] + H.relYaw; }   // keep the ghost off-screen until they are ready
 }
 $('#coachNext').onclick = () => { if(H.tut && H.tut.step === 0) tutGo(1); };
-function startTutorial(){ AN.track('tutorial_start', {replay:!!P.tutDone}); setTab('tonight'); startHunt({sp:'wisp', tutorial:true, signal:'training'}); }
+/* friendly first ghosts: every new hunter meets a different one */
+function starterSp(seed){ const l = ['wisp','pumpkin','sock','teddy','kitty','toaster','bookworm'].filter(k => SP[k] && allowed(SP[k])); if(!l.length) return 'wisp'; return seed == null ? pick(l) : l[hash32(String(seed)) % l.length]; }
+function startTutorial(){ AN.track('tutorial_start', {replay:!!P.tutDone}); setTab('tonight'); startHunt({sp:starterSp(), tutorial:true, signal:'training'}); }
 $('#trainBtn').onclick = startTutorial;
 $('#goOut').onclick = () => { AN.track('go_out_map'); setTab('map'); };
 $('#travelCard').onclick = () => { AN.track('portal_entry', {from:'hunt_card'}); openPortalSheet(); };
