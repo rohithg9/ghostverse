@@ -3452,7 +3452,7 @@ async function dropPortalAt(lat, lng){
   try{ const r = await fetch('https://api.maptiler.com/geocoding/' + lng.toFixed(5) + ',' + lat.toFixed(5) + '.json?limit=1&key=' + encodeURIComponent(CFG.maptilerKey)); const js = await r.json(); const f = js.features && js.features[0];
     if(f){ name = f.text || name; const ctx = (f.context || []).map(c => c.text); city = ctx.find(Boolean) || (f.place_name || '').split(',').slice(1, 2).join('').trim(); } }catch(e){}
   const box = $('#mCard'); box.hidden = false;
-  box.innerHTML = (img ? '<div class="teaser on" style="height:110px;margin-bottom:8px;background-image:url(&quot;' + esc(img.thumb_1024_url || img.thumb_2048_url) + '&quot;)"></div>' : '') + '<div class="mc"><div class="pic" style="font-size:34px;display:grid;place-items:center">🌀</div><div class="t"><b>' + esc(name) + '</b><span>' + esc(city || 'Somewhere on Earth') + '</span><span class="mono dist">' + (img ? 'Open a portal here?' : '🛰️ 3D satellite view · no street photos yet') + '</span></div><button class="x" id="mcX" aria-label="Close">✕</button></div><div class="row2"><button class="btn ghost" id="dpNo">Pick again</button><button class="btn" id="dpGo">Open portal</button></div>';
+  box.innerHTML = (img ? '<div class="teaser on" style="height:110px;margin-bottom:8px;background-image:url(&quot;' + esc(img.thumb_1024_url || img.thumb_2048_url) + '&quot;)"></div>' : '') + '<div class="mc"><div class="pic" style="font-size:34px;display:grid;place-items:center">🌀</div><div class="t"><b>' + esc(name) + '</b><span>' + esc(city || 'Somewhere on Earth') + '</span><span class="mono dist">' + (img ? 'Open a portal here?' : 'No street photos here yet · the ghost is still here') + '</span></div><button class="x" id="mcX" aria-label="Close">✕</button></div><div class="row2"><button class="btn ghost" id="dpNo">Pick again</button><button class="btn" id="dpGo">Open portal</button></div>';
   box.querySelector('#mcX').onclick = () => { box.hidden = true; }; box.querySelector('#dpNo').onclick = () => { box.hidden = true; W.pickPortal = true; renderChip(); };
   box.querySelector('#dpGo').onclick = () => { box.hidden = true; W.pickPortal = false; if(W.portal) endPortal(true, true);
     const pool2 = SPECIES.filter(x => !x.boss && unlocked(x) && allowed(x)); const sp = pool2[Math.floor(Math.random() * pool2.length)] || SP.wisp;
@@ -3675,7 +3675,7 @@ function satLayer(on){
   }catch(e){}
 }
 function street3D(lat, lng){
-  const m = W.map; if(!m || !W.ready || !H.on) return false;
+  const m = W.map; if(!CFG.street3d || !m || !W.ready || !H.on) return false;   // off by default: too heavy for iPhones alongside the hunt
   try{
     const el = m.getContainer();
     if(!S3.on){ S3.home = el.parentNode; S3.next = el.nextSibling; S3.prev = {center:m.getCenter(), zoom:m.getZoom(), pitch:m.getPitch(), bearing:m.getBearing()};
