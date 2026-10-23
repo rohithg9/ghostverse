@@ -3463,7 +3463,7 @@ async function dropPortalAt(lat, lng){
 function enterPortal(l){
   let how = l._how || (hasWorld() ? 'world' : freePortalReady() ? 'free' : 'ticket'); if(how === 'free') P.freePortalDay = dayKey(); else if(how === 'ticket') P.inv.portal = Math.max(0, (P.inv.portal || 0) - 1);
   const until = Date.now() + (hasWorld() ? 15 : PORTAL_MIN) * 60000;
-  W.portal = {lat:l[2], lng:l[3], name:l[0], city:l[1], until, real:how !== 'free'}; P.portalNow = W.portal; saveP();
+  W.portal = {lat:l[2], lng:l[3], name:l[0], city:l[1], until, real:how !== 'free'}; PUSED.clear(); P.portalNow = W.portal; saveP();
   sfx.reveal(); sfx.release(); buzz([60, 40, 120]); AN.track('portal_enter', {city:l[1], how});
   if(tab !== 'map') setTab('map');
   setPos(l[2] + rnd(-0.0006, 0.0006), l[3] + rnd(-0.0006, 0.0006), 5, true); W.lastPoi = null; maybeLoadPois(true);
@@ -3571,18 +3571,28 @@ function skyScore(img){
     im.onerror = () => { clearTimeout(t); res(0.5); }; im.src = u; });
 }
 /* nearest photo that actually shows the open street */
+/* photos already used in this portal trip: each ghost gets its own view when the area has more than one */
+const PUSED = new Map();
 async function pickLit(list){ const top = list.slice(0, 5); const sc = await Promise.all(top.map(skyScore)); top.forEach((im, i) => im._sc = sc[i]);
   return top.find(im => im._sc >= 0.55) || top.slice().sort((a, b) => b._sc - a._sc)[0] || null; }
 async function findPano(lat, lng){
   const key = lat.toFixed(4) + ',' + lng.toFixed(4); if(panoCache[key]) return panoCache[key];
-  let best = null;
-  // all sizes are asked at once; the closest size with a good open-air photo wins
+  let best = null, reuse = null; const seen = new Set();
+  const take = v => { PUSED.set(v.id, Date.now()); return (panoCache[key] = v); };
+  const consider = async l => {   // fresh photos first; ones another ghost already used are kept as a fallback
+    l = l.filter(i => !seen.has(i.id)); l.forEach(i => seen.add(i.id)); if(!l.length) return null;
+    const fresh = l.filter(i => !PUSED.has(i.id)), used = l.filter(i => PUSED.has(i.id));
+    if(used.length && !reuse){ const u = await pickLit(used); if(u && u._sc >= 0.35) reuse = u; }
+    if(!fresh.length) return null; const v = await pickLit(fresh); if(v && v._sc >= 0.55) return v; if(v && (!best || v._sc > best._sc)) best = v; return null; };
+  // all sizes are asked at once; the closest size with a good open-air photo nobody has used yet wins
   const reqs = [0.0012, 0.004, 0.009, 0.022, 0.045].map(d => findPanoIn(lat, lng, d));   // 360° photos first, out to ~5 km (they fill the whole view)
-  for(const r of reqs){ const l = await r; if(!l.length) continue; const v = await pickLit(l); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
-  if(best && best._sc >= 0.35) return (panoCache[key] = best);   // any open-air 360° beats a flat photo
-  const fl = await findFlat(lat, lng); if(fl.length){ const v = await pickLit(fl); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
-  if(best && best._sc >= 0.35) return (panoCache[key] = best);   // a bit dim but still outdoors
-  return null;   // only dark tunnel/indoor shots here: better the portal mist than a wrong place
+  for(const r of reqs){ const v = await consider(await r); if(v) return take(v); }
+  if(best && best._sc >= 0.35) return take(best);   // any open-air 360° beats a flat photo
+  if(reuse && !reuse.flat){ reuse._reused = true; return (panoCache[key] = reuse); }   // only one 360° here: share it (turned to a new angle)
+  const fl = await findFlat(lat, lng); { const v = await consider(fl); if(v) return take(v); }
+  if(best && best._sc >= 0.35) return take(best);   // a bit dim but still outdoors
+  if(reuse){ reuse._reused = true; return (panoCache[key] = reuse); }
+  return null;   // only dark tunnel/indoor shots here: better the satellite view than a wrong place
 }
 /* when no 360° photo exists, a normal street photo still shows the real place */
 async function findFlat(lat, lng){
@@ -3596,7 +3606,7 @@ async function findFlat(lat, lng){
 }
 async function findPanoIn(lat, lng, d){
   const bbox = [lng - d, lat - d, lng + d, lat + d].map(v => v.toFixed(6)).join(',');
-  const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_256_url,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at&is_pano=true&limit=' + (d < 0.005 ? 12 : 8) + '&bbox=' + bbox, 10000);
+  const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_256_url,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at&is_pano=true&limit=' + (d < 0.005 ? 20 : 14) + '&bbox=' + bbox, 10000);
   const list = (js && js.data || []).filter(i => i.geometry && (i.thumb_1024_url || i.thumb_2048_url));
   if(!list.length) return [];
   const dist = i => GEO.dist({lat, lng}, {lat:i.geometry.coordinates[1], lng:i.geometry.coordinates[0]});
@@ -3655,7 +3665,7 @@ function showPano(pn){
   const ip = {lat:pn.img.geometry.coordinates[1], lng:pn.img.geometry.coordinates[0]}; const tgt = W.portal ? {lat:W.portal.lat, lng:W.portal.lng} : ip;
   PANO_SHOWN = pn; pn.t = Date.now();
   const b = GEO.dist(ip, tgt) > 8 && GEO.dist(ip, tgt) < 600 ? bearingDeg(ip, tgt) : (pn.img.computed_compass_angle || 0);
-  panoSphere.rotation.y = camYawPitch()[0] - Math.PI / 2 + (b - (pn.img.computed_compass_angle || 0)) * D2R;
+  panoSphere.rotation.y = camYawPitch()[0] - Math.PI / 2 + (b - (pn.img.computed_compass_angle || 0)) * D2R + (pn.img._reused && !(H.opts && H.opts.place) ? rnd(0.9, 5.4) : 0);
   panoSphere.visible = true; if(cityEnv) cityEnv.visible = false; env.visible = false; scene.fog = null; H.portalBg = 'photo';
   $('#portalLoad').hidden = true; $('#portalMist').hidden = true; $('#panoCredit').hidden = false;
   hint('You are standing ' + (H.opts && H.opts.place ? 'at ' + H.opts.place : 'in ' + (W.portal ? W.portal.city : 'the street')) + '. Look around!');
