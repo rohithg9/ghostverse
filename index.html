@@ -3447,12 +3447,13 @@ async function dropPortalAt(lat, lng){
   const img = CFG.mapillaryToken ? await findPano(lat, lng) : null;
   W.pickBusy = false; W.pickPortal = false; renderChip();
   if(CFG.mapillaryToken && !img) AN.track('drop_portal_nophoto');   // still fine: the hunt uses the 3D satellite street view
+  const moved = img ? GEO.dist({lat, lng}, {lat:img.geometry.coordinates[1], lng:img.geometry.coordinates[0]}) : 0;
   if(img){ lng = img.geometry.coordinates[0]; lat = img.geometry.coordinates[1]; }   // snap to the exact spot the photo was taken
   let name = 'This street', city = '';
   try{ const r = await fetch('https://api.maptiler.com/geocoding/' + lng.toFixed(5) + ',' + lat.toFixed(5) + '.json?limit=1&key=' + encodeURIComponent(CFG.maptilerKey)); const js = await r.json(); const f = js.features && js.features[0];
     if(f){ name = f.text || name; const ctx = (f.context || []).map(c => c.text); city = ctx.find(Boolean) || (f.place_name || '').split(',').slice(1, 2).join('').trim(); } }catch(e){}
   const box = $('#mCard'); box.hidden = false;
-  box.innerHTML = (img ? '<div class="teaser on" style="height:110px;margin-bottom:8px;background-image:url(&quot;' + esc(img.thumb_1024_url || img.thumb_2048_url) + '&quot;)"></div>' : '') + '<div class="mc"><div class="pic" style="font-size:34px;display:grid;place-items:center">🌀</div><div class="t"><b>' + esc(name) + '</b><span>' + esc(city || 'Somewhere on Earth') + '</span><span class="mono dist">' + (img ? 'Open a portal here?' : 'No street photos here yet · the ghost is still here') + '</span></div><button class="x" id="mcX" aria-label="Close">✕</button></div><div class="row2"><button class="btn ghost" id="dpNo">Pick again</button><button class="btn" id="dpGo">Open portal</button></div>';
+  box.innerHTML = (img ? '<div class="teaser on" style="height:110px;margin-bottom:8px;background-image:url(&quot;' + esc(img.thumb_1024_url || img.thumb_2048_url) + '&quot;)"></div>' : '') + '<div class="mc"><div class="pic" style="font-size:34px;display:grid;place-items:center">🌀</div><div class="t"><b>' + esc(name) + '</b><span>' + esc(city || 'Somewhere on Earth') + '</span><span class="mono dist">' + (img ? (moved > 300 ? 'Nearest street photos · ' + GEO.fmt(moved) + ' from your pin' : 'Open a portal here?') : 'No street photos near here yet · the ghost is still here') + '</span></div><button class="x" id="mcX" aria-label="Close">✕</button></div><div class="row2"><button class="btn ghost" id="dpNo">Pick again</button><button class="btn" id="dpGo">Open portal</button></div>';
   box.querySelector('#mcX').onclick = () => { box.hidden = true; }; box.querySelector('#dpNo').onclick = () => { box.hidden = true; W.pickPortal = true; renderChip(); };
   box.querySelector('#dpGo').onclick = () => { box.hidden = true; W.pickPortal = false; if(W.portal) endPortal(true, true);
     const pool2 = SPECIES.filter(x => !x.boss && unlocked(x) && allowed(x)); const sp = pool2[Math.floor(Math.random() * pool2.length)] || SP.wisp;
@@ -3575,7 +3576,7 @@ async function findPano(lat, lng){
   const key = lat.toFixed(4) + ',' + lng.toFixed(4); if(panoCache[key]) return panoCache[key];
   let best = null;
   // all sizes are asked at once; the closest size with a good open-air photo wins
-  const reqs = [0.0012, 0.004, 0.009].map(d => findPanoIn(lat, lng, d));
+  const reqs = [0.0012, 0.004, 0.009, 0.022].map(d => findPanoIn(lat, lng, d));   // the last size reaches the nearest road in the countryside
   for(const r of reqs){ const l = await r; if(!l.length) continue; const v = await pickLit(l); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
   const fl = await findFlat(lat, lng); if(fl.length){ const v = await pickLit(fl); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
   if(best && best._sc >= 0.35) return (panoCache[key] = best);   // a bit dim but still outdoors
@@ -3583,7 +3584,7 @@ async function findPano(lat, lng){
 }
 /* when no 360° photo exists, a normal street photo still shows the real place */
 async function findFlat(lat, lng){
-  for(const d of [0.002, 0.006]){
+  for(const d of [0.002, 0.006, 0.02]){
     const bbox = [lng - d, lat - d, lng + d, lat + d].map(v => v.toFixed(6)).join(',');
     const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_256_url,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at,width,height&is_pano=false&limit=12&bbox=' + bbox, 9000);
     const list = (js && js.data || []).filter(i => i.geometry && (i.thumb_2048_url || i.thumb_1024_url) && (!i.width || i.width >= i.height));
@@ -3620,23 +3621,30 @@ function loadPortalPano(lat, lng){
   })).catch(() => { PANOS.delete(key); AN.track('pano_fail'); return null; });
   // keep memory small: at most 4 photos
   if(PANOS.size > 4){ const old = [...PANOS.values()].filter(o => o !== ent && o !== PANO_SHOWN).sort((a, b) => a.t - b.t)[0];
-    if(old){ PANOS.delete(old.key); if(old.tex && ![...PANOS.values()].some(o => o.tex === old.tex)) old.tex.dispose(); } }
+    if(old){ PANOS.delete(old.key); if(old.tex && ![...PANOS.values()].some(o => o.tex === old.tex)) old.tex.dispose(); if(old.blur && old.blur !== (blurSphere && blurSphere.material.map)) old.blur.dispose(); } }
   return ent.loading;
 }
 function clearPanos(){ for(const o of PANOS.values()){ if(o.tex && o !== PANO_SHOWN) o.tex.dispose(); } PANOS.clear(); }
 function bearingDeg(a, b){ const p1 = a.lat * D2R, p2 = b.lat * D2R, dl = (b.lng - a.lng) * D2R; return (Math.atan2(Math.sin(dl) * Math.cos(p2), Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl)) / D2R + 360) % 360; }
-let flatPanel = null;
+let flatPanel = null, blurSphere = null;
+function blurTex(tex){ try{ const im = tex.image; const c = document.createElement('canvas'); c.width = 48; c.height = 24; const x = c.getContext('2d');
+  x.drawImage(im, 12, 0, 24, 24); x.save(); x.scale(-1, 1); x.drawImage(im, -12, 0, 24, 24); x.drawImage(im, -60, 0, 24, 24); x.restore();
+  const t = new THREE.CanvasTexture(c); t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; return t; }catch(e){ return null; } }
 function showPano(pn){
   if(pn.img.flat){
     if(panoSphere) panoSphere.visible = false;
+    if(!pn.blur) pn.blur = blurTex(pn.tex);
+    if(pn.blur){ if(!blurSphere){ const g = new THREE.SphereGeometry(52, 32, 16); g.scale(-1, 1, 1); blurSphere = new THREE.Mesh(g, new THREE.MeshBasicMaterial({map:pn.blur, fog:false, depthWrite:false})); blurSphere.renderOrder = -11; scene.add(blurSphere); }
+      else if(blurSphere.material.map !== pn.blur){ blurSphere.material.map = pn.blur; blurSphere.material.needsUpdate = true; } }
     if(!flatPanel){ const g = new THREE.SphereGeometry(40, 40, 20, Math.PI - 0.95, 1.9, Math.PI / 2 - 0.62, 1.24); g.scale(-1, 1, 1); flatPanel = new THREE.Mesh(g, new THREE.MeshBasicMaterial({map:pn.tex, fog:false, depthWrite:false, side:THREE.DoubleSide})); flatPanel.renderOrder = -10; scene.add(flatPanel); }
     else if(flatPanel.material.map !== pn.tex){ flatPanel.material.map = pn.tex; flatPanel.material.needsUpdate = true; }
     const cy0 = camYawPitch()[0]; flatPanel.rotation.y = cy0 - Math.PI / 2; H.flatYaw = cy0; flatPanel.visible = true; PANO_SHOWN = pn; pn.t = Date.now();
-    env.visible = false; scene.fog = null; H.portalBg = 'flat'; $('#portalLoad').hidden = true; $('#portalMist').hidden = false; $('#panoCredit').hidden = false;
+    if(blurSphere){ blurSphere.rotation.y = flatPanel.rotation.y; blurSphere.visible = !!pn.blur; }
+    env.visible = false; scene.fog = null; H.portalBg = 'flat'; $('#portalLoad').hidden = true; $('#portalMist').hidden = !!pn.blur; $('#panoCredit').hidden = false;
     if(H.main && !H.boss){ H.main.yaw = cy0 + rnd(-0.5, 0.5); }
     hint('A glimpse of ' + ((H.opts && H.opts.place) || (W.portal ? W.portal.name : 'the street')) + '. The ghost is in the picture!'); return;
   }
-  if(flatPanel) flatPanel.visible = false;
+  if(flatPanel) flatPanel.visible = false; if(blurSphere) blurSphere.visible = false;
   if(!panoSphere){ const g = new THREE.SphereGeometry(60, 48, 32); g.scale(-1, 1, 1); panoSphere = new THREE.Mesh(g, new THREE.MeshBasicMaterial({map:pn.tex, fog:false, depthWrite:false})); panoSphere.renderOrder = -10; scene.add(panoSphere); }
   else if(panoSphere.material.map !== pn.tex){ panoSphere.material.map = pn.tex; panoSphere.material.needsUpdate = true; }
   // turn the photo so the landmark is straight ahead when the hunt opens
@@ -3650,7 +3658,7 @@ function showPano(pn){
 }
 function streetPhoto(){
   const tok = ++streetPhoto.n;
-  if(panoSphere) panoSphere.visible = false; if(flatPanel) flatPanel.visible = false; $('#portalMist').hidden = true; env.visible = false; $('#panoCredit').hidden = true;   // never show the last place's photo
+  if(panoSphere) panoSphere.visible = false; if(flatPanel) flatPanel.visible = false; if(blurSphere) blurSphere.visible = false; $('#portalMist').hidden = true; env.visible = false; $('#panoCredit').hidden = true;   // never show the last place's photo
   const vp = H.opts && H.opts.lat != null ? [H.opts.lat, H.opts.lng] : portalView();   // the photo of THIS ghost's exact spot
   const ready = PANOS.get(panoKey(vp[0], vp[1])); if(ready && ready.tex){ showPano(ready); return; }
   const quick = street3D(vp[0], vp[1]);
@@ -3708,7 +3716,7 @@ function street3DOff(){
     m.resize(); m.jumpTo({center:S3.prev.center, zoom:S3.prev.zoom, pitch:Math.min(70, S3.prev.pitch), bearing:S3.prev.bearing}); mlyVis(); }catch(e){}
   $('#portalMap').hidden = true;
 }
-function hidePortalBg(){ street3DOff(); if(flatPanel) flatPanel.visible = false; streetPhoto.n++; $('#portalLoad').hidden = true; $('#portalMist').hidden = true; if(panoSphere) panoSphere.visible = false; $('#panoCredit').hidden = true; if(cityEnv) cityEnv.visible = false; if(SV){ try{ SV.setVisible(false); }catch(e){} } $('#portalMap').hidden = true; }
+function hidePortalBg(){ street3DOff(); if(flatPanel) flatPanel.visible = false; if(blurSphere) blurSphere.visible = false; streetPhoto.n++; $('#portalLoad').hidden = true; $('#portalMist').hidden = true; if(panoSphere) panoSphere.visible = false; $('#panoCredit').hidden = true; if(cityEnv) cityEnv.visible = false; if(SV){ try{ SV.setVisible(false); }catch(e){} } $('#portalMap').hidden = true; }
 
 /* ================= PROGRESSION: story campaign, achievements ================= */
 const CAMPAIGN = [
