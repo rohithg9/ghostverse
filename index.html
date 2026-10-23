@@ -705,6 +705,7 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
   <video id="cam" playsinline muted autoplay hidden></video>
   <div id="portalMap" hidden></div>
   <div id="portalMist" hidden><div class="mistfx"></div></div>
+  <div id="satCredit" hidden style="position:absolute;left:10px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:6;font-size:10px;color:rgba(255,255,255,.75);pointer-events:none">Satellite © MapTiler © Maxar</div>
   <div id="portalLoad" hidden><div class="pspin"></div><div>Opening portal to <b id="portalLoadCity"></b>…</div></div>
   <div id="gl"></div>
   <svg id="reticle" width="200" height="200" viewBox="-100 -100 200 200" aria-hidden="true">
@@ -2576,7 +2577,7 @@ function pickLeg(e, cyaw, cpitch, speedDeg){
   else if(r < 0.86 && !H.boss){ ty = e.yaw + rnd(-25, 25) * D2R; tp = e.pitch * 0.5 + rnd(-6, 8) * D2R; td = Math.min(17, e.dist + rnd(5, 8)); leg = 'retreat'; }
   else { ty = e.yaw + (Math.random() < 0.5 ? -1 : 1) * rnd(100, 170) * D2R; tp = e.pitch + rnd(-20, 25) * D2R; leg = 'orbit'; }
   if(H.portalBg === 'flat' && !H.boss){ ty = H.flatYaw + clamp(wrapPI(ty - H.flatYaw), -0.75, 0.75); tp = clamp(tp, -12 * D2R, 20 * D2R); leg = 'dart'; }
-  if((H.portalBg === 'photo' || H.portalBg === 'map3d') && !H.boss){ if(leg === 'swoop' || leg === 'dive') { ty = e.yaw + (Math.random() < 0.5 ? -1 : 1) * rnd(70, 150) * D2R; leg = 'orbit'; } tp = clamp(tp, -8 * D2R, 28 * D2R); }   // keep ghosts on the skyline so you sweep across the scenery
+  if((H.portalBg === 'photo' || H.portalBg === 'map3d' || H.portalBg === 'sat') && !H.boss){ if(leg === 'swoop' || leg === 'dive') { ty = e.yaw + (Math.random() < 0.5 ? -1 : 1) * rnd(70, 150) * D2R; leg = 'orbit'; } tp = clamp(tp, -8 * D2R, 28 * D2R); }   // keep ghosts on the skyline so you sweep across the scenery
   if(H.boss && !e.minion){ tp = clamp(tp, -0.15, 0.95); td = 9; }
   else if(leg === 'retreat') td = clamp(td, 6, 17); else td = clamp(td + rnd(-2, 2), 4.6, Math.max(9, e.dist));
   e.ty = ty; e.tp = clamp(tp, PITCH_MIN, PITCH_MAX); e.td = td; e.leg = leg;
@@ -3633,6 +3634,7 @@ function blurTex(tex){ try{ const im = tex.image; const c = document.createEleme
 function showPano(pn){
   if(pn.img.flat){
     if(panoSphere) panoSphere.visible = false;
+    if(!pn.cropped){ pn.cropped = true; pn.tex.offset.y = 0.1; pn.tex.repeat.y = 0.9; pn.tex.needsUpdate = true; }   // hide dashcam date stamps along the bottom
     if(!pn.blur) pn.blur = blurTex(pn.tex);
     if(pn.blur){ if(!blurSphere){ const g = new THREE.SphereGeometry(52, 32, 16); g.scale(-1, 1, 1); blurSphere = new THREE.Mesh(g, new THREE.MeshBasicMaterial({map:pn.blur, fog:false, depthWrite:false})); blurSphere.renderOrder = -11; scene.add(blurSphere); }
       else if(blurSphere.material.map !== pn.blur){ blurSphere.material.map = pn.blur; blurSphere.material.needsUpdate = true; } }
@@ -3658,7 +3660,7 @@ function showPano(pn){
 }
 function streetPhoto(){
   const tok = ++streetPhoto.n;
-  if(panoSphere) panoSphere.visible = false; if(flatPanel) flatPanel.visible = false; if(blurSphere) blurSphere.visible = false; $('#portalMist').hidden = true; env.visible = false; $('#panoCredit').hidden = true;   // never show the last place's photo
+  if(panoSphere) panoSphere.visible = false; if(flatPanel) flatPanel.visible = false; if(blurSphere) blurSphere.visible = false; hideSat(); $('#portalMist').hidden = true; env.visible = false; $('#panoCredit').hidden = true;   // never show the last place's photo
   const vp = H.opts && H.opts.lat != null ? [H.opts.lat, H.opts.lng] : portalView();   // the photo of THIS ghost's exact spot
   const ready = PANOS.get(panoKey(vp[0], vp[1])); if(ready && ready.tex){ showPano(ready); return; }
   const quick = street3D(vp[0], vp[1]);
@@ -3668,7 +3670,12 @@ function streetPhoto(){
     if(tok !== streetPhoto.n || !H.on || !H.portalBg) return;
     $('#portalLoad').hidden = true;
     if(pn && pn.tex){ street3DOff(); showPano(pn); }
-    else if(H.portalBg === 'map3d' || street3D(vp[0], vp[1])){ hint('You are standing in ' + ((H.opts && H.opts.place) || W.portal.city) + '. No street photos here yet, so this is the satellite view. The ghost is here!'); AN.track('portal_3d', {city:W.portal && W.portal.city}); }
+    else if(H.portalBg === 'map3d' || street3D(vp[0], vp[1])){ /* (3D street, off by default) */ }
+    else if(CFG.maptilerKey){ H.portalBg = 'mist'; $('#portalMist').hidden = false;
+      satTiles(vp[0], vp[1]).then(st => { if(tok !== streetPhoto.n || !H.on || !H.portalBg) return;
+        if(st){ showSat(st); hint('You are standing in ' + ((H.opts && H.opts.place) || W.portal.city) + '. No street photos here, so this is the real place from above. The ghost is here!'); AN.track('portal_sat', {city:W.portal && W.portal.city}); }
+        else { hint('No street photo of this exact spot yet. The ghost is still here!'); AN.track('portal_mist', {lat:vp[0], lng:vp[1]}); } }); }
+    else if(false){ hint('You are standing in ' + ((H.opts && H.opts.place) || W.portal.city) + '. No street photos here yet, so this is the satellite view. The ghost is here!'); AN.track('portal_3d', {city:W.portal && W.portal.city}); }
     else { H.portalBg = 'mist'; $('#portalMist').hidden = false; scene.fog = null; hint('No street photo of this exact spot yet. The ghost is still here!'); AN.track('portal_mist', {lat:vp[0], lng:vp[1]}); }
   });
 }
@@ -3716,7 +3723,40 @@ function street3DOff(){
     m.resize(); m.jumpTo({center:S3.prev.center, zoom:S3.prev.zoom, pitch:Math.min(70, S3.prev.pitch), bearing:S3.prev.bearing}); mlyVis(); }catch(e){}
   $('#portalMap').hidden = true;
 }
-function hidePortalBg(){ street3DOff(); if(flatPanel) flatPanel.visible = false; if(blurSphere) blurSphere.visible = false; streetPhoto.n++; $('#portalLoad').hidden = true; $('#portalMist').hidden = true; if(panoSphere) panoSphere.visible = false; $('#panoCredit').hidden = true; if(cityEnv) cityEnv.visible = false; if(SV){ try{ SV.setVisible(false); }catch(e){} } $('#portalMap').hidden = true; }
+/* Last resort that always works: the real satellite image of the exact spot as the ground around you, under an open sky.
+   One flat texture in the hunt's own 3D view (no second map), so it stays light on phones. */
+let satGround = null, satSky = null; const SATC = {};
+function satTiles(lat, lng){
+  const key = lat.toFixed(4) + ',' + lng.toFixed(4); if(SATC[key]) return SATC[key];
+  return (SATC[key] = new Promise(res => {
+    if(!CFG.maptilerKey) return res(null);
+    const tryZ = z => { const n2 = 2 ** z, fx = (lng + 180) / 360 * n2, r = lat * D2R, fy = (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n2;
+      const tx = Math.floor(fx), ty = Math.floor(fy), S = 256, c = document.createElement('canvas'); c.width = c.height = S * 3; const x = c.getContext('2d');
+      x.fillStyle = '#6b6f5e'; x.fillRect(0, 0, S * 3, S * 3); let n = 0, ok = 0, fin = false;
+      const done = () => { if(fin || ++n < 9) return; fin = true; clearTimeout(to);
+        if(ok >= 5) res({c, z, px:(1 + fx - tx) / 3, py:(1 + fy - ty) / 3, m:3 * 40075016 * Math.cos(r) / n2}); else if(z > 16) tryZ(16); else res(null); };
+      const to = setTimeout(() => { if(fin) return; fin = true; if(ok >= 5) res({c, z, px:(1 + fx - tx) / 3, py:(1 + fy - ty) / 3, m:3 * 40075016 * Math.cos(r) / n2}); else if(z > 16) tryZ(16); else res(null); }, 7000);
+      for(let i = -1; i <= 1; i++) for(let j = -1; j <= 1; j++){ const im = new Image(); im.crossOrigin = 'anonymous';
+        im.onload = () => { if(!fin){ x.drawImage(im, (i + 1) * S, (j + 1) * S, S, S); ok++; } done(); }; im.onerror = done;
+        im.src = 'https://api.maptiler.com/tiles/satellite-v2/' + z + '/' + (tx + i) + '/' + (ty + j) + '.jpg?key=' + encodeURIComponent(CFG.maptilerKey); } };
+    tryZ(18);
+  }).then(v => { if(!v) delete SATC[key]; return v; }));
+}
+function showSat(st){
+  const P = 230;   // ground size in the hunt's units (about 1-2 m each)
+  if(!satSky){ const sc = document.createElement('canvas'); sc.width = 8; sc.height = 256; const sx = sc.getContext('2d'); const gr = sx.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, '#3d74d6'); gr.addColorStop(0.42, '#8fbcf2'); gr.addColorStop(0.5, '#dfe8f2'); gr.addColorStop(1, '#9aa39a'); sx.fillStyle = gr; sx.fillRect(0, 0, 8, 256);
+    satSky = new THREE.Mesh(new THREE.SphereGeometry(110, 24, 12), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(sc), side:THREE.BackSide, fog:false, depthWrite:false})); satSky.renderOrder = -12; scene.add(satSky); }
+  if(satGround){ if(satGround.material.map) satGround.material.map.dispose(); satGround.material.map = new THREE.CanvasTexture(st.c); satGround.material.needsUpdate = true; }
+  else { satGround = new THREE.Mesh(new THREE.PlaneGeometry(P, P), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(st.c), fog:true, depthWrite:false})); satGround.rotation.x = -Math.PI / 2; satGround.position.y = -1.7; satGround.renderOrder = -11; scene.add(satGround); }
+  const t = satGround.material.map; t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; t.anisotropy = 4;
+  satGround.position.x = (0.5 - st.px) * P; satGround.position.z = (0.5 - st.py) * P;   // the spot you stand on is under your feet
+  satGround.visible = satSky.visible = true;
+  scene.fog = new THREE.Fog('#dfe8f2', 25, 105);
+  env.visible = false; H.portalBg = 'sat'; $('#portalMist').hidden = true; $('#portalLoad').hidden = true; $('#panoCredit').hidden = true; $('#satCredit').hidden = false;
+}
+function hideSat(){ if(satGround) satGround.visible = false; if(satSky) satSky.visible = false; const sc = $('#satCredit'); if(sc) sc.hidden = true; if(H.portalBg === 'sat') scene.fog = null; }
+function hidePortalBg(){ street3DOff(); hideSat(); if(flatPanel) flatPanel.visible = false; if(blurSphere) blurSphere.visible = false; streetPhoto.n++; $('#portalLoad').hidden = true; $('#portalMist').hidden = true; if(panoSphere) panoSphere.visible = false; $('#panoCredit').hidden = true; if(cityEnv) cityEnv.visible = false; if(SV){ try{ SV.setVisible(false); }catch(e){} } $('#portalMap').hidden = true; }
 
 /* ================= PROGRESSION: story campaign, achievements ================= */
 const CAMPAIGN = [
