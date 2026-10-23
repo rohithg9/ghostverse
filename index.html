@@ -3080,7 +3080,7 @@ function renderCard(){
   }
   const gm = 'https://www.google.com/maps/dir/?api=1&destination=' + it.lat.toFixed(6) + ',' + it.lng.toFixed(6) + '&travelmode=walking';
   const act = it.kind === 'mine' ? '<button class="btn ecto" id="mcShare">Share link</button>' : it.kind === 'cache' ? '<button class="btn pump" id="mcGo"' + (ok ? '' : ' disabled') + '>' + (ok ? 'Open cache' : 'Walk ' + GEO.fmt(Math.max(1, d - rangeFor(it)))) + '</button>' :
-    (!ok && d != null && d > 2000 && !W.portal ? '<button class="btn" id="mcPortal">🌀 Portal here</button>' :
+    (!ok && d != null && d > 2000 ? '<button class="btn" id="mcPortal">🌀 Portal here</button>' :
     '<button class="btn" id="mcGo"' + (ok ? '' : ' disabled') + '>' + (ok ? (W.portal ? 'Jump here & hunt' : 'Hunt it') : d == null ? 'Turn on location' : 'Walk ' + GEO.fmt(Math.max(1, d - rangeFor(it)))) + '</button>');
   box.innerHTML = '<div class="mc"><div class="pic">' + pic + '</div><div class="t"><b>' + title + '</b><span>' + sub + '</span>' + (d != null ? '<span class="mono dist">' + GEO.fmt(d) + ' ' + dir + '</span>' : '') + '</div><button class="x" id="mcX" aria-label="Close">✕</button></div>' +
     '<div class="row2">' + (W.portal ? '<span class="btn ghost" style="pointer-events:none;opacity:.8">🌀 Portal: ' + esc(W.portal.city) + '</span>' : '<a class="btn ghost" id="mcDir" href="' + gm + '" target="_blank" rel="noopener">Directions</a>') + act + '</div>';
@@ -3553,40 +3553,52 @@ let panoSphere = null, panoTex = null; const panoCache = {};
 /* Public spots with a clear view of each landmark (photos can't go inside buildings). */
 const PORTAL_VIEW = {'Tower of London':[51.5068, -0.0745], 'Edinburgh Castle':[55.9490, -3.1966], 'Colosseum':[41.8908, 12.4930], 'Brandenburg Gate':[52.5160, 13.3800], 'Louvre courtyard':[48.8611, 2.3360],
   'Old Town Square':[50.0874, 14.4207], 'Charles Bridge':[50.0864, 14.4122], 'Prague Castle':[50.0899, 14.3986], 'Dublin Castle':[53.3431, -6.2664], 'New York Public Library':[40.7527, -73.9817], 'Times Square':[40.7580, -73.9855],
-  'Tokyo Tower':[35.6575, 139.7470], 'Gateway of India':[18.9217, 72.8340], 'Sydney Opera House':[-33.8590, 151.2130], 'Buda Castle':[47.4960, 19.0405], 'Sagrada Família':[41.4030, 2.1740], 'Forbidden City':[39.9087, 116.3975],
+  'Tokyo Tower':[35.6575, 139.7470], 'Gateway of India':[18.9217, 72.8340], 'Sydney Opera House':[-33.8578, 151.2142], 'Buda Castle':[47.4960, 19.0405], 'Sagrada Família':[41.4030, 2.1740], 'Forbidden City':[39.9087, 116.3975],
   'Gyeongbokgung Palace':[37.5760, 126.9769], 'Petronas Towers':[3.1565, 101.7123], 'Pyramids of Giza':[29.9765, 31.1310], 'Red Square':[55.7540, 37.6200], 'Hollywood Sign':[34.1270, -118.3210], 'CN Tower':[43.6420, -79.3860],
   'Taipei 101':[25.0330, 121.5640], 'Charminar':[17.3612, 78.4744], 'Victoria Memorial':[22.5432, 88.3430], 'Burj Khalifa':[25.1950, 55.2760], 'Wat Arun':[13.7428, 100.4890], 'Plaza de Mayo':[-34.6083, -58.3712], 'Zócalo':[19.4330, -99.1330]};
 async function mlyGet(url, ms){ const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms); try{ const r = await fetch(url, {signal:ac.signal}); if(!r.ok) return null; return await r.json(); }catch(e){ return null; } finally{ clearTimeout(t); } }
+/* Is this an open-air daylight photo? Tunnels, car parks and night shots have a dark top (no sky). 0 = dark, 1 = bright sky. */
+const LIT = {};
+function skyScore(img){
+  if(LIT[img.id] != null) return Promise.resolve(LIT[img.id]);
+  const u = img.thumb_256_url || img.thumb_1024_url; if(!u) return Promise.resolve(0.5);
+  return new Promise(res => { const im = new Image(); im.crossOrigin = 'anonymous'; const t = setTimeout(() => res(0.5), 4000);
+    im.onload = () => { clearTimeout(t); try{ const c = document.createElement('canvas'); c.width = 32; c.height = 16; const x = c.getContext('2d'); x.drawImage(im, 0, 0, 32, 16);
+      const d = x.getImageData(0, 0, 32, 16).data; let top = 0, all = 0; for(let i = 0; i < d.length; i += 4){ const l = 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]; all += l; if(i < d.length / 4) top += l; }
+      top /= 128; all /= 512; res(LIT[img.id] = Math.min(1, top / 150) * 0.7 + Math.min(1, all / 110) * 0.3); }catch(e){ res(0.5); } };
+    im.onerror = () => { clearTimeout(t); res(0.5); }; im.src = u; });
+}
+/* nearest photo that actually shows the open street */
+async function pickLit(list){ const top = list.slice(0, 5); const sc = await Promise.all(top.map(skyScore)); top.forEach((im, i) => im._sc = sc[i]);
+  return top.find(im => im._sc >= 0.55) || top.slice().sort((a, b) => b._sc - a._sc)[0] || null; }
 async function findPano(lat, lng){
   const key = lat.toFixed(4) + ',' + lng.toFixed(4); if(panoCache[key]) return panoCache[key];
-  const tok = encodeURIComponent(CFG.mapillaryToken);
-  const near = panoFromMap(lat, lng, 400);
-  if(near){ const d = await mlyGet('https://graph.mapillary.com/' + near.id + '?access_token=' + tok + '&fields=id,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at', 8000);
-    if(d && (d.thumb_1024_url || d.thumb_2048_url)){ if(!d.geometry) d.geometry = {type:'Point', coordinates:[near.lng, near.lat]}; return (panoCache[key] = d); } }
-  // all sizes are asked at once; the closest size that has a photo wins
+  let best = null;
+  // all sizes are asked at once; the closest size with a good open-air photo wins
   const reqs = [0.0012, 0.004, 0.009].map(d => findPanoIn(lat, lng, d));
-  for(const r of reqs){ const v = await r; if(v) return (panoCache[key] = v); }
-  const f = await findFlat(lat, lng); if(f) return (panoCache[key] = f);
-  return null;
+  for(const r of reqs){ const l = await r; if(!l.length) continue; const v = await pickLit(l); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
+  const fl = await findFlat(lat, lng); if(fl.length){ const v = await pickLit(fl); if(v && v._sc >= 0.55) return (panoCache[key] = v); if(v && (!best || v._sc > best._sc)) best = v; }
+  if(best && best._sc >= 0.35) return (panoCache[key] = best);   // a bit dim but still outdoors
+  return null;   // only dark tunnel/indoor shots here: better the portal mist than a wrong place
 }
 /* when no 360° photo exists, a normal street photo still shows the real place */
 async function findFlat(lat, lng){
   for(const d of [0.002, 0.006]){
     const bbox = [lng - d, lat - d, lng + d, lat + d].map(v => v.toFixed(6)).join(',');
-    const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at,width,height&is_pano=false&limit=12&bbox=' + bbox, 9000);
+    const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_256_url,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at,width,height&is_pano=false&limit=12&bbox=' + bbox, 9000);
     const list = (js && js.data || []).filter(i => i.geometry && (i.thumb_2048_url || i.thumb_1024_url) && (!i.width || i.width >= i.height));
-    if(list.length){ const dist = i => GEO.dist({lat, lng}, {lat:i.geometry.coordinates[1], lng:i.geometry.coordinates[0]}); list.sort((a, b) => dist(a) - dist(b)); const r = list[0]; r.flat = true; return r; }
+    if(list.length){ const dist = i => GEO.dist({lat, lng}, {lat:i.geometry.coordinates[1], lng:i.geometry.coordinates[0]}); list.sort((a, b) => dist(a) - dist(b)); list.forEach(r => r.flat = true); return list; }
   }
-  return null;
+  return [];
 }
 async function findPanoIn(lat, lng, d){
   const bbox = [lng - d, lat - d, lng + d, lat + d].map(v => v.toFixed(6)).join(',');
-  const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at&is_pano=true&limit=' + (d < 0.005 ? 12 : 8) + '&bbox=' + bbox, 10000);
+  const js = await mlyGet('https://graph.mapillary.com/images?access_token=' + encodeURIComponent(CFG.mapillaryToken) + '&fields=id,thumb_256_url,thumb_1024_url,thumb_2048_url,computed_compass_angle,geometry,captured_at&is_pano=true&limit=' + (d < 0.005 ? 12 : 8) + '&bbox=' + bbox, 10000);
   const list = (js && js.data || []).filter(i => i.geometry && (i.thumb_1024_url || i.thumb_2048_url));
-  if(!list.length) return null;
+  if(!list.length) return [];
   const dist = i => GEO.dist({lat, lng}, {lat:i.geometry.coordinates[1], lng:i.geometry.coordinates[0]});
   list.sort((a, b) => (dist(a) - (a.captured_at || 0) / 3.15e10 * 8) - (dist(b) - (b.captured_at || 0) / 3.15e10 * 8));
-  return list[0];
+  return list;
 }
 /* street photos: one per ghost location, a few kept ready so jumping around is instant */
 const PANOS = new Map(); let PANO_SHOWN = null;
