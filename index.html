@@ -200,7 +200,7 @@ h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.02e
 
 /* hunt */
 #hunt{position:fixed;inset:0;z-index:50;background:#05040b;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-#cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cam{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;min-width:100%;min-height:100%;object-fit:cover;-webkit-transform:translateZ(0);transform:translateZ(0)}
 #gl{position:absolute;inset:0}
 #gl canvas{width:100%!important;height:100%!important;display:block}
 .hud{position:absolute;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top,0px) + 12px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px;pointer-events:none}
@@ -2258,9 +2258,13 @@ async function startCamera(){
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw 0;
     const st = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720}}, audio:false});
     if(!H.on){ st.getTracks().forEach(t => t.stop()); return; }
-    H.stream = st; v.srcObject = st; await v.play().catch(() => {}); H.cam = true; v.hidden = false; env.visible = false; scene.fog = null;
+    H.stream = st; v.srcObject = st; fitCam(); await v.play().catch(() => {}); H.cam = true; v.hidden = false; fitCam(); setTimeout(fitCam, 250); setTimeout(fitCam, 1000); env.visible = false; scene.fog = null;
   }catch(e){ H.cam = false; }
 }
+/* iPhone Safari sometimes shows the camera at its own size instead of filling the screen: pin it to the full screen */
+function fitCam(){ const v = $('#cam'); if(!v) return; const w = innerWidth, h = innerHeight; v.style.width = w + 'px'; v.style.height = h + 'px'; v.style.objectFit = 'cover'; }
+(() => { const v = $('#cam'); if(!v) return; ['loadedmetadata', 'resize', 'playing'].forEach(ev => v.addEventListener(ev, () => { fitCam(); setTimeout(fitCam, 300); })); })();
+addEventListener('resize', () => { fitCam(); setTimeout(fitCam, 400); }); addEventListener('orientationchange', () => setTimeout(fitCam, 500));
 function stopCamera(){ if(H.stream){ H.stream.getTracks().forEach(t => t.stop()); H.stream = null; } const v = $('#cam'); v.srcObject = null; v.hidden = true; H.cam = false; }
 let wake = null;
 async function wakeOn(){ try{ if(navigator.wakeLock) wake = await navigator.wakeLock.request('screen'); }catch(e){} }
