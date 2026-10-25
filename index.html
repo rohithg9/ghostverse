@@ -264,6 +264,9 @@ h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.02e
 #imgModal img{max-width:100%;max-height:62vh;border-radius:14px;display:block;margin:0 auto}
 /* economy + shop */
 .hdr-r{display:flex;align-items:center;gap:8px;min-width:0}
+.gem{display:inline-block;width:13px;height:13px;flex:none;background:linear-gradient(135deg,#f3e6ff,#a77bff 50%,#5a2fd0);clip-path:polygon(50% 0,100% 36%,50% 100%,0 36%);filter:drop-shadow(0 0 4px rgba(167,123,255,.8))}
+.cbtn.gemc{border-color:rgba(167,123,255,.6);color:#e6d8ff}
+.shmini{display:flex;align-items:center;gap:4px;margin-left:4px;padding-left:8px;border-left:1px solid rgba(255,255,255,.15);color:#dccbff}
 .coins{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid rgba(255,190,90,.35);border-radius:999px;padding:7px 12px 7px 8px;font-family:var(--mono);font-weight:600;font-size:14px;color:#ffe2b0;flex:none}
 .coin{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#f6c04a 45%,#c47f12 100%);box-shadow:inset 0 0 0 2px rgba(255,240,200,.55),0 0 8px rgba(246,192,74,.5);flex:none;display:inline-block}
 .coins.pop{animation:pop .5s ease}
@@ -523,7 +526,7 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
   <header class="top">
     <div class="logo">GHOSTVERSE</div>
     <div class="hdr-r">
-    <button class="coins" id="coinBtn" aria-label="Your coins. Open the Armory"><span class="coin"></span><span id="coinNum">0</span></button>
+    <button class="coins" id="coinBtn" aria-label="Your coins. Open the Armory"><span class="coin"></span><span id="coinNum">0</span><span class="shmini"><span class="gem"></span><span id="shardNum">0</span></span></button>
     <button class="me" id="meBtn" aria-label="Your profile and settings">
       <span class="ring" id="lvRing"><b id="lvNum">1</b></span>
       <span class="who"><span id="meName">Hunter</span><small id="meRank">Novice Seeker</small></span>
@@ -940,13 +943,13 @@ const BEAMS = {violet:['#e2d8ff','#8a6dff'], ecto:['#dafff7','#2fdcc0'], pumpkin
 const SHOP = {
   premium:[
     {id:'pass', name:'Ghostverse Pass', price:'$3.99', pence:399},
-    {id:'coins_s', name:'Pouch', coins:500, price:'$0.99', pence:99},
-    {id:'coins_m', name:'Chest', coins:1500, price:'$2.49', pence:249, tag:'Popular'},
-    {id:'coins_l', name:'Vault', coins:4000, price:'$4.99', pence:499, tag:'Best value'},
-    {id:'coins_xl', name:'Treasury', coins:10000, price:'$9.99', pence:999, tag:'Most coins'},
+    {id:'coins_s', name:'Pouch', shards:120, price:'$0.99', pence:99},
+    {id:'coins_m', name:'Chest', shards:330, price:'$2.49', pence:249, tag:'Popular'},
+    {id:'coins_l', name:'Vault', shards:750, price:'$4.99', pence:499, tag:'Best value'},
+    {id:'coins_xl', name:'Treasury', shards:1700, price:'$9.99', pence:999, tag:'Most shards'},
     {id:'world', name:'World Pass', price:'$4.99', pence:499},
     {id:'premium', name:'Ghostverse Premium', price:'$4.99', pence:499},
-    {id:'club', name:'Coin Club', sub:true, coins:1500, price:'$2.99/month', pence:299},
+    {id:'club', name:'Coin Club', sub:true, coins:1500, shards:150, price:'$2.99/month', pence:299},
   ],
   gear:[
     {id:'emf', name:'EMF Pro', desc:'Tells you which way to turn while you search.', price:300, lvl:1, gear:'emf', icon:'emf'},
@@ -958,25 +961,27 @@ const SHOP = {
     {id:'frost', name:'Frost Beam', desc:'Your beam turns icy. Fire ghosts take triple damage.', price:450, lvl:2, gear:'frost', icon:'frost'},
     {id:'uv', name:'UV Torch', desc:'Reveals Shadow ghosts and lets your beam hit them at full power.', price:450, lvl:3, gear:'uv', icon:'uv'},
     {id:'beam2', name:'Beam Mk III', desc:'Captures 50% faster.', price:900, lvl:4, gear:'beam', to:2, req:'beam1', icon:'beam'},
+    {id:'beam3', name:'Beam Mk IV', desc:'Captures 75% faster.', price:2500, lvl:6, gear:'beam', to:3, req:'beam2', icon:'beam'},
+    {id:'beam4', name:'Beam Mk V', desc:'Captures twice as fast. The best beam in the Veil.', price:6000, lvl:9, gear:'beam', to:4, req:'beam3', icon:'beam'},
   ],
   supplies:[
     {id:'net', name:'Stasis Net', desc:'An extra net, used when you run out mid-hunt.', price:40, inv:'net', icon:'net'},
     {id:'flash', name:'Spirit Flash', desc:'An extra flash, used when you run out.', price:50, inv:'flash', icon:'flash'},
-    {id:'glass', name:'Hourglass', desc:'Adds 10 seconds when a ghost is about to escape.', price:60, inv:'glass', icon:'glass'},
-    {id:'lure', name:'Rare Lure', desc:'Draws a Rare or Epic spirit to you.', price:120, inv:'lure', icon:'lure'},
-    {id:'portal', name:'Portal Ticket', desc:'Step into a famous place anywhere on Earth for 5 minutes and hunt its ghosts.', price:150, inv:'portal', icon:'globe'},
+    {id:'glass', name:'Hourglass', desc:'Adds 10 seconds when a ghost is about to escape.', sh:8, inv:'glass', icon:'glass'},
+    {id:'lure', name:'Rare Lure', desc:'Draws a Rare or Epic spirit to you.', sh:25, inv:'lure', icon:'lure'},
+    {id:'portal', name:'Portal Ticket', desc:'Step into a famous place anywhere on Earth for 5 minutes and hunt its ghosts.', sh:30, inv:'portal', icon:'globe'},
     {id:'food', name:'Ghost Food', desc:'Feeds a caged ghost. Hungry ghosts break out of their jars.', price:30, inv:'food', icon:'food'},
     {id:'trap', name:'Ghost Trap', desc:'Throw it on the floor. Ghosts that fly over it get snapped.', price:70, inv:'trap', icon:'trap'},
     {id:'lantern', name:'Soul Lantern', desc:'Slows every ghost and reveals invisible ones for 6 seconds.', price:80, inv:'lantern', icon:'lantern'},
   ],
   style:[
     {id:'b_violet', name:'Violet Beam', kind:'beam', val:'violet', price:0},
-    {id:'b_ecto', name:'Ecto Beam', kind:'beam', val:'ecto', price:150},
-    {id:'b_pumpkin', name:'Pumpkin Beam', kind:'beam', val:'pumpkin', price:150},
-    {id:'b_blood', name:'Blood Moon Beam', kind:'beam', val:'blood', price:250},
+    {id:'b_ecto', name:'Ecto Beam', kind:'beam', val:'ecto', sh:50},
+    {id:'b_pumpkin', name:'Pumpkin Beam', kind:'beam', val:'pumpkin', sh:50},
+    {id:'b_blood', name:'Blood Moon Beam', kind:'beam', val:'blood', sh:90},
     {id:'b_gold', name:'Golden Beam', kind:'beam', val:'gold', pass:true},
     {id:'f_classic', name:'Classic photo frame', kind:'frame', val:'classic', price:0},
-    {id:'f_pumpkin', name:'Pumpkin Patch frame', kind:'frame', val:'pumpkin', price:200},
+    {id:'f_pumpkin', name:'Pumpkin Patch frame', kind:'frame', val:'pumpkin', sh:60},
     {id:'f_moon', name:'Blood Moon frame', kind:'frame', val:'moon', pass:true},
   ]
 };
@@ -1060,10 +1065,14 @@ const AN = (() => {
 
 /* ================= ECONOMY ================= */
 const todayKey = (d = new Date()) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
-function bumpCoins(){ const c = $('#coinBtn'); if(!c) return; $('#coinNum').textContent = P.coins.toLocaleString(); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
+function bumpCoins(){ const c = $('#coinBtn'); if(!c) return; $('#coinNum').textContent = P.coins.toLocaleString(); const sn = $('#shardNum'); if(sn) sn.textContent = (P.shards || 0).toLocaleString(); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
 function addCoins(n, reason){ n = Math.round(n); if(n <= 0) return 0; P.coins += n; saveP(); bumpCoins(); AN.track('coins_earned', {amount:n, reason}); return n; }
 function capOk(kind, max){ const k = todayKey(); if(!P.caps[k]) P.caps = {[k]:{}}; const c = P.caps[k][kind] || 0; if(c >= max) return false; P.caps[k][kind] = c + 1; saveP(); return true; }
 function spend(n){ if(P.coins < n) return false; P.coins -= n; saveP(); bumpCoins(); return true; }
+/* Soul Shards: the paid currency. Only from purchases (and a small welcome gift), never from playing. */
+const GEM = '<span class="gem"></span>';
+function addShards(n, why){ n = Math.round(n); if(n <= 0) return 0; P.shards = (P.shards || 0) + n; saveP(); bumpCoins(); AN.track('shards_earned', {amount:n, reason:why}); return n; }
+function spendShards(n, what){ if((P.shards || 0) < n) return false; P.shards -= n; saveP(); bumpCoins(); AN.track('shards_spent', {amount:n, item:what || ''}); return true; }
 
 /* ================= SOUND ================= */
 const sfx = (() => {
@@ -1523,12 +1532,13 @@ function renderArmory(){ setTimeout(() => { try{ ADS.fill(); }catch(e){} }, 50);
   const l = level(P.xp);
   const owns = id => P.owned.includes(id);
   const priceBtn = (n, id) => '<button class="cbtn' + (P.coins < n ? ' poor' : '') + '" data-buy="' + id + '"><span class="coin"></span>' + n.toLocaleString() + '</button>';
+  const gemBtn = (n, id) => '<button class="cbtn gemc' + ((P.shards || 0) < n ? ' poor' : '') + '" data-buy="' + id + '">' + GEM + n.toLocaleString() + '</button>';
   const pass = SHOP.premium[0];
   const nextNightPossible = !NI.preview && !NI.over && !P.pass && effNight() < 8;
-  let h = '<div class="stack"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>The Armory</h2><span class="coins" style="pointer-events:none"><span class="coin"></span>' + P.coins.toLocaleString() + '</span></div>' +
-    '<div class="earn"><span class="chip">Catch ghosts: +20 to +1,000</span><span class="chip">Daily lantern bonus</span><span class="chip">Share a photo: +25</span><span class="chip">Haunt a friend: +30</span></div></div>';
+  let h = '<div class="stack"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>The Armory</h2><span class="coins" style="pointer-events:none"><span class="coin"></span>' + P.coins.toLocaleString() + '<span class="shmini">' + GEM + (P.shards || 0).toLocaleString() + '</span></span></div>' +
+    '<div class="earn"><span class="chip">🪙 Coins: catch ghosts, daily bonus, sharing</span><span class="chip">💎 Soul Shards: rare power-ups, lantern refills, portals, styles</span></div></div>';
   // premium (one Stripe link)
-  if(!freeLaunchActive() && CFG.stripeLink && !isPremium()) h += '<div class="section"><div class="passcard premcard"><div class="eyebrow" style="color:#ffd28a">Best value · one payment</div><h3>Ghostverse Premium</h3><ul><li>∞ Unlimited hunts for 30 days</li><li>🚫 No ads</li><li>🌍 World Pass for 30 days: every place + any street on Earth</li><li>Every night open, double coins, Golden Beam</li><li>3,000 coins + 5 Portal Tickets to keep</li></ul><div class="pricebar"><span class="owned" style="background:none;color:#fff;font-size:22px">' + esc(CFG.premiumPrice || '$4.99') + '</span><button class="btn pump" data-prem="premium">Get Premium</button></div></div></div>';
+  if(!freeLaunchActive() && CFG.stripeLink && !isPremium()) h += '<div class="section"><div class="passcard premcard"><div class="eyebrow" style="color:#ffd28a">Best value · one payment</div><h3>Ghostverse Premium</h3><ul><li>∞ Unlimited hunts for 30 days</li><li>🚫 No ads</li><li>🌍 World Pass for 30 days: every place + any street on Earth</li><li>Every night open, double coins, Golden Beam</li><li>💎 300 Soul Shards + 3,000 coins + 5 Portal Tickets</li></ul><div class="pricebar"><span class="owned" style="background:none;color:#fff;font-size:22px">' + esc(CFG.premiumPrice || '$4.99') + '</span><button class="btn pump" data-prem="premium">Get Premium</button></div></div></div>';
   else if(isPremium()) h += '<div class="section"><div class="worldbar own"><b>✨ Premium active · ' + premDaysLeft() + ' days left</b><small>Unlimited hunts, the whole world and every night. Renew any time to add 30 more days.</small>' + (CFG.stripeLink ? '<button class="btn ecto" data-prem="premium">Add 30 days · ' + esc(CFG.premiumPrice || '$4.99') + '</button>' : '') + '</div></div>';
   // pass
   if(canSell('pass')) h += '<div class="section"><div class="passcard"><div class="eyebrow" style="color:#ffc062">Season of the Veil</div><h3>Ghostverse Pass</h3><ul>' +
@@ -1542,21 +1552,22 @@ function renderArmory(){ setTimeout(() => { try{ ADS.fill(); }catch(e){} }, 50);
     h += '<div class="section"><div class="passcard clubcard"><div class="eyebrow" style="color:#9ff8ea">Monthly · cancel anytime</div><h3>Coin Club</h3><ul><li>1,500 coins every month</li><li>+100 bonus coins every day you play</li><li>A free Portal Ticket every week</li><li>Club badge on your hunter card</li></ul>' +
       '<div class="pricebar">' + (P.club ? '<span class="owned">Member</span><span class="note">Your daily bonus is boosted</span>' : '<div style="display:flex;gap:8px;align-items:center"><span class="was">' + cl.price + '</span>' + (freeLaunchActive() ? '<span class="freetag">Free during launch</span>' : '') + '</div><button class="btn ecto" data-prem="club">' + (freeLaunchActive() ? 'Join free' : 'Join · ' + cl.price) + '</button>') + '</div></div></div>'; }
   // coin packs
-  if(SHOP.premium.some(pk => pk.coins && !pk.sub && canSell(pk.id))) h += '<div class="section"><div class="eyebrow">Coin packs</div><div class="packs">' + SHOP.premium.filter(pk => pk.coins && !pk.sub && canSell(pk.id)).map(pk => { const got = P.claimed.includes(pk.id) && freeLaunchActive();
-    return '<button class="pack" data-prem="' + pk.id + '"' + (got ? ' disabled style="opacity:.55"' : '') + '>' + (pk.tag ? '<span class="tagx">' + pk.tag + '</span>' : '') + '<span class="stackc">' + '<span class="coin"></span>'.repeat(pk.coins >= 4000 ? 3 : pk.coins >= 1500 ? 2 : 1) + '</span><b>' + pk.coins.toLocaleString() + '</b><small>' + (got ? 'Claimed' : freeLaunchActive() ? '<s>' + pk.price + '</s> Free' : pk.price) + '</small></button>'; }).join('') + '</div>' +
+  if(SHOP.premium.some(pk => pk.shards && !pk.sub && canSell(pk.id))) h += '<div class="section" id="shardPacks"><div class="eyebrow">💎 Soul Shards' + (firstTopup() ? ' · <span style="color:#ffd28a">first top-up: double shards!</span>' : '') + '</div><div class="packs">' + SHOP.premium.filter(pk => pk.shards && !pk.sub && canSell(pk.id)).map(pk => { const got = P.claimed.includes(pk.id) && freeLaunchActive();
+    return '<button class="pack" data-prem="' + pk.id + '"' + (got ? ' disabled style="opacity:.55"' : '') + '>' + (pk.tag ? '<span class="tagx">' + pk.tag + '</span>' : '') + '<span class="stackc">' + GEM.repeat(pk.shards >= 700 ? 3 : pk.shards >= 300 ? 2 : 1) + '</span><b>' + (pk.shards * (firstTopup() ? 2 : 1)).toLocaleString() + '</b><small>' + (got ? 'Claimed' : freeLaunchActive() ? '<s>' + pk.price + '</s> Free' : pk.price) + '</small></button>'; }).join('') + '</div>' +
+    '<div class="item" style="margin-top:8px"><div class="ico">' + GEM + '</div><div style="min-width:0"><div class="n">Swap shards for coins</div><div class="s">50 Soul Shards → 1,000 coins, for gear and supplies.</div></div>' + gemBtn(50, 'swap') + '</div>' +
     (freeLaunchActive() ? '<p class="note">Everything here is free while Ghostverse launches. Prices show what it will cost later.</p>' : '') + '</div>';
   h += kitHtml();
   try{ if(ADS.on()) h += '<div class="section adslot" hidden></div>'; }catch(e){}
   // early night
-  if(nextNightPossible){ const nn = effNight() + 1; h += '<div class="section"><div class="item"><div class="ico">' + icon('moon') + '</div><div style="min-width:0"><div class="n">Open night ' + nn + ' early</div><div class="s">Meet "' + esc(NIGHTS[nn - 1].t) + '" tonight instead of tomorrow.</div></div>' + priceBtn(250, 'early') + '</div></div>'; }
+  if(nextNightPossible){ const nn = effNight() + 1; h += '<div class="section"><div class="item"><div class="ico">' + icon('moon') + '</div><div style="min-width:0"><div class="n">Open night ' + nn + ' early</div><div class="s">Meet "' + esc(NIGHTS[nn - 1].t) + '" tonight instead of tomorrow.</div></div>' + gemBtn(40, 'early') + '</div></div>'; }
   // gear
   h += '<div class="section"><div class="eyebrow">Gear upgrades · yours forever</div><div class="stack" style="gap:8px">' + SHOP.gear.map(g => {
     const have = g.to ? P.gear.beam >= g.to : P.gear[g.gear] >= 1; const lockedL = l < g.lvl; const needReq = g.req && !(P.gear.beam >= 1);
-    const right = have ? '<span class="owned">Owned</span>' : lockedL ? '<span class="lock">Level ' + g.lvl + '</span>' : needReq ? '<span class="lock">Needs Mk II</span>' : priceBtn(g.price, g.id);
+    const needReq2 = g.req && !(P.gear.beam >= ({beam1:1, beam2:2, beam3:3})[g.req]); const right = have ? '<span class="owned">Owned</span>' : lockedL ? '<span class="lock">Level ' + g.lvl + '</span>' : needReq2 ? '<span class="lock">Needs ' + esc((SHOP.gear.find(x => x.id === g.req) || {}).name || '') + '</span>' : priceBtn(g.price, g.id);
     return '<div class="item"><div class="ico">' + icon(g.icon) + '</div><div style="min-width:0"><div class="n">' + esc(g.name) + '</div><div class="s">' + esc(g.desc) + '</div></div>' + right + '</div>'; }).join('') + '</div></div>';
   // supplies
   h += '<div class="section"><div class="eyebrow">Supplies</div><div class="stack" style="gap:8px">' + SHOP.supplies.map(it =>
-    '<div class="item"><div class="ico">' + icon(it.icon) + '</div><div style="min-width:0"><div class="n">' + esc(it.name) + (P.inv[it.inv] ? ' <span class="chip">×' + P.inv[it.inv] + '</span>' : '') + '</div><div class="s">' + esc(it.desc) + '</div></div>' + priceBtn(it.price, it.id) + '</div>').join('') + '</div></div>';
+    '<div class="item"><div class="ico">' + icon(it.icon) + '</div><div style="min-width:0"><div class="n">' + esc(it.name) + (P.inv[it.inv] ? ' <span class="chip">×' + P.inv[it.inv] + '</span>' : '') + '</div><div class="s">' + esc(it.desc) + '</div></div>' + (it.sh ? gemBtn(it.sh, it.id) : priceBtn(it.price, it.id)) + '</div>').join('') + '</div></div>';
   // ghost store
   const storeList = SPECIES.filter(s => !s.boss && unlocked(s) && allowed(s));
   const GP = {Common:80, Uncommon:150, Rare:300, Epic:600};
@@ -1566,7 +1577,7 @@ function renderArmory(){ setTimeout(() => { try{ ADS.fill(); }catch(e){} }, 50);
   h += '<div class="section"><div class="eyebrow">Style</div><div class="swatches">' + SHOP.style.map(st => {
     const own = owns(st.id) || (st.pass && P.pass); const eq = P.style[st.kind] === st.val;
     const bar = st.kind === 'beam' ? 'background:linear-gradient(90deg,' + BEAMS[st.val][1] + ',' + BEAMS[st.val][0] + ')' : 'background:' + ({classic:'linear-gradient(90deg,#8a6dff,#7cf3e0)', pumpkin:'linear-gradient(90deg,#ff7a1a,#ffd28a)', moon:'linear-gradient(90deg,#5a0b18,#e0213f)'}[st.val]);
-    const sub = eq ? '<span class="owned">Equipped</span>' : own ? '<span class="lock">Tap to equip</span>' : st.pass ? '<span class="lock">Pass only</span>' : '<span class="cbtn' + (P.coins < st.price ? ' poor' : '') + '"><span class="coin"></span>' + st.price + '</span>';
+    const sub = eq ? '<span class="owned">Equipped</span>' : own ? '<span class="lock">Tap to equip</span>' : st.pass ? '<span class="lock">Pass only</span>' : st.sh ? '<span class="cbtn gemc' + ((P.shards || 0) < st.sh ? ' poor' : '') + '">' + GEM + st.sh + '</span>' : '<span class="cbtn' + (P.coins < st.price ? ' poor' : '') + '"><span class="coin"></span>' + st.price + '</span>';
     return '<button class="sw" data-style="' + st.id + '" aria-pressed="' + eq + '"><span class="bar" style="' + bar + '"></span><b>' + esc(st.name) + '</b>' + sub + '</button>'; }).join('') + '</div></div>';
   const box = $('#armory'); box.innerHTML = h;
   box.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => buyCoinItem(b.dataset.buy));
@@ -1574,7 +1585,26 @@ function renderArmory(){ setTimeout(() => { try{ ADS.fill(); }catch(e){} }, 50);
   box.querySelectorAll('[data-style]').forEach(b => b.onclick = () => styleClick(b.dataset.style));
   box.querySelectorAll('[data-ghost]').forEach(b => b.onclick = () => { const sp = SP[b.dataset.ghost]; const price = ({Common:80, Uncommon:150, Rare:300, Epic:600})[sp.rarity]; if(!spend(price)) return notEnough(price, 'ghost_' + sp.key); P.bag[sp.key] = (P.bag[sp.key] || 0) + 1; saveP(); sfx.good(); AN.track('ghost_bought', {sp:sp.key, rarity:sp.rarity, price}); toast(sp.name + ' is in your bag. Release it from the map.'); renderArmory(); });
 }
+function firstTopup(){ return !P.claimed.some(c => /^paid_coins_/.test(c)); }
+function notEnoughShards(n, id){
+  const need = n - (P.shards || 0); AN.track('insufficient_shards', {item:id, price:n, shards:P.shards || 0});
+  const packs = SHOP.premium.filter(pk => pk.shards && !pk.sub && canSell(pk.id)); const dbl = firstTopup() ? 2 : 1; const fit = packs.find(pk => pk.shards * dbl >= need) || packs[packs.length - 1];
+  const name = (SHOP.gear.concat(SHOP.supplies, SHOP.style).find(x => x.id === id) || {name:id === 'early' ? 'an early night' : id === 'portal' ? 'a Portal Ticket' : id === 'extend' ? '5 more portal minutes' : id === 'refill' ? 'a lantern refill' : id === 'retry' ? 'another try' : id === 'swap' ? 'a coin swap' : 'this'}).name;
+  openSheet('<div class="hd"><h2>💎 Soul Shards</h2><button class="btn ghost" id="shClose">Close</button></div>' +
+    '<p class="lore">You need <b>' + need.toLocaleString() + ' more Soul Shards</b> for ' + esc(name) + '. Shards are the Veil\'s rare magic: power-ups, refills and portals.' + (dbl > 1 ? ' <b style="color:#ffd28a">Your first top-up gives double!</b>' : '') + '</p>' +
+    '<div class="topups">' + packs.map(pk => '<button class="topup' + (pk === fit ? ' fit' : '') + '" data-tp="' + pk.id + '">' + (pk === fit ? '<span class="tagx">Enough for this</span>' : pk.tag ? '<span class="tagx">' + pk.tag + '</span>' : '') + '<b>' + GEM + ' ' + (pk.shards * dbl).toLocaleString() + '</b><small>' + (freeLaunchActive() ? 'Free now · later ' + pk.price : pk.price) + '</small></button>').join('') + '</div>' +
+    (!freeLaunchActive() && CFG.stripeLink && !isPremium() ? '<button class="topup fit" data-tp="premium" style="width:100%;margin-top:8px"><span class="tagx">Best value</span><b>' + GEM + ' 300 + 30 days Premium</b><small>Unlimited hunts, the whole world, every night, 3,000 coins · ' + esc(CFG.premiumPrice || '$4.99') + '</small></button>' : '') +
+    '<p class="note">Shards never run out and stay with your account.</p>', sh => {
+      sh.querySelector('#shClose').onclick = () => { closeSheet(); AN.track('topup_dismiss', {item:id, cur:'shards'}); };
+      sh.querySelectorAll('[data-tp]').forEach(b => b.onclick = () => { P.pendingBuy = id; saveP(); AN.track('topup_click', {item:id, pack:b.dataset.tp, need, cur:'shards'}); closeSheet(); setTimeout(() => premiumClick(b.dataset.tp), 200); });
+    });
+}
 function notEnough(n, id){
+  if((P.shards || 0) >= 50){ const need0 = n - P.coins; openSheet('<div class="hd"><h2>Not enough coins</h2><button class="btn ghost" id="shClose">Close</button></div><p class="lore">You need <b>' + need0.toLocaleString() + ' more coins</b>. Swap 50 Soul Shards for 1,000 coins?</p><button class="btn pump big" id="swapGo">' + GEM + ' Swap 50 shards → 1,000 coins</button><p class="note">Or earn coins by catching ghosts.</p>', sh => {
+    sh.querySelector('#shClose').onclick = closeSheet; sh.querySelector('#swapGo').onclick = () => { closeSheet(); if(spendShards(50, 'swap')){ addCoins(1000, 'shard_swap'); sfx.good(); toast('+1,000 coins'); setTimeout(() => buyCoinItem(id), 400); } }; }); return; }
+  return notEnoughShards(50, 'swap');
+}
+function notEnoughOld(n, id){
   const need = n - P.coins; AN.track('insufficient_coins', {item:id, price:n, coins:P.coins});
   const packs = SHOP.premium.filter(pk => pk.coins && !pk.sub && canSell(pk.id)); const fit = packs.find(pk => pk.coins >= need) || packs[packs.length - 1];
   const name = (SHOP.gear.concat(SHOP.supplies).find(x => x.id === id) || {name:id === 'early' ? 'an early night' : id === 'portal' ? 'a Portal Ticket' : id === 'extend' ? '5 more portal minutes' : id === 'refill' ? 'a lantern refill' : id === 'retry' ? 'another try' : 'this'}).name;
@@ -1590,11 +1620,15 @@ function notEnough(n, id){
 }
 function buyCoinItem(id){
   sfx.ensure();
-  if(id === 'refill'){ if(!spend(REFILL_COST)) return notEnough(REFILL_COST, id); refillOil(); return; }
-  if(id === 'early'){ if(!spend(250)) return notEnough(250, id); P.early = (P.early || 0) + 1; saveP(); signals = null; sfx.release(); AN.track('purchase_coins', {item:'early_night', price:250, night:effNight()}); toast('Night ' + effNight() + ' is open. New spirits are loose.'); return renderArmory(); }
+  if(id === 'refill'){ if(!spendShards(REFILL_COST, id)) return notEnoughShards(REFILL_COST, id); refillOil(); return; }
+  if(id === 'retry'){ if((P.shards || 0) >= RETRY_COST){ toast('You have shards now. Tap Try again.'); } return; }
+  if(id === 'extend'){ toast('Shards added. Tap +5 minutes on the portal chip.'); return; }
+  if(id === 'swap'){ if(!spendShards(50, 'swap')) return notEnoughShards(50, id); addCoins(1000, 'shard_swap'); sfx.good(); toast('+1,000 coins'); return renderArmory(); }
+  if(id === 'early'){ if(!spendShards(40, id)) return notEnoughShards(40, id); P.early = (P.early || 0) + 1; saveP(); signals = null; sfx.release(); AN.track('purchase_coins', {item:'early_night', price:250, night:effNight()}); toast('Night ' + effNight() + ' is open. New spirits are loose.'); return renderArmory(); }
   const g = SHOP.gear.find(x => x.id === id), it = SHOP.supplies.find(x => x.id === id);
   const item = g || it; if(!item) return;
-  if(!spend(item.price)) return notEnough(item.price, id);
+  if(item.sh){ if(!spendShards(item.sh, id)) return notEnoughShards(item.sh, id); }
+  else if(!spend(item.price)) return notEnough(item.price, id);
   if(g){ if(g.to) P.gear.beam = g.to; else P.gear[g.gear] = 1; }
   else P.inv[it.inv] = (P.inv[it.inv] || 0) + 1;
   saveP(); sfx.good(); buzz(25); AN.track('purchase_coins', {item:id, price:item.price, kind:g ? 'gear' : 'supply'});
@@ -1605,7 +1639,8 @@ function styleClick(id){
   const own = P.owned.includes(id) || (st.pass && P.pass);
   if(!own){
     if(st.pass){ AN.track('paid_feature_click', {item:id, via:'style'}); premiumClick('pass'); return; }
-    if(!spend(st.price)) return notEnough(st.price, id);
+    if(st.sh){ if(!spendShards(st.sh, id)) return notEnoughShards(st.sh, id); }
+    else if(!spend(st.price)) return notEnough(st.price, id);
     P.owned.push(id); sfx.good(); AN.track('purchase_coins', {item:id, price:st.price, kind:'style'});
   }
   P.style[st.kind] = st.val; saveP(); AN.track('style_equip', {item:id}); renderArmory();
@@ -1616,7 +1651,7 @@ function premiumClick(id){
   const link = CFG.stripe && CFG.stripe[id];
   if(!freeLaunchActive() && link){ AN.track('checkout_start', {item:id, price_pence:it.pence}); goCheckout(link, id); return; }
   if(!freeLaunchActive() && CFG.stripeLink){ premiumBundleSheet(id); return; }
-  const what = id === 'premium' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>Unlimited hunts for 30 days</li><li>World Pass + Ghostverse Pass for 30 days</li><li>3,000 coins + 5 Portal Tickets to keep</li></ul>' : id === 'world' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>All ' + portalCities().length + ' famous places unlocked</li><li>Drop a portal on any street on Earth</li><li>No tickets needed, 15-minute trips</li></ul>' : id === 'club' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>1,500 coins every month</li><li>+100 bonus coins every day you play</li><li>A free Portal Ticket every week</li></ul>' : id === 'pass' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>Every night unlocked now</li><li>Double coins from captures</li><li>+1 Net and +1 Flash every hunt</li><li>Golden Beam and Blood Moon frame</li></ul>' : '<p class="lore">' + it.coins.toLocaleString() + ' coins for gear, supplies and styles.</p>';
+  const what = id === 'premium' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>Unlimited hunts for 30 days</li><li>World Pass + Ghostverse Pass for 30 days</li><li>💎 300 Soul Shards + 3,000 coins + 5 Portal Tickets</li></ul>' : id === 'world' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>All ' + portalCities().length + ' famous places unlocked</li><li>Drop a portal on any street on Earth</li><li>No tickets needed, 15-minute trips</li></ul>' : id === 'club' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>1,500 coins every month</li><li>+100 bonus coins every day you play</li><li>A free Portal Ticket every week</li></ul>' : id === 'pass' ? '<ul style="margin:0;padding-left:18px;color:#ddd5f5;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>Every night unlocked now</li><li>Double coins from captures</li><li>+1 Net and +1 Flash every hunt</li><li>Golden Beam and Blood Moon frame</li></ul>' : '<p class="lore">' + it.coins.toLocaleString() + ' coins for gear, supplies and styles.</p>';
   openSheet('<div class="hd"><h2>' + (id === 'premium' ? 'Ghostverse Premium' : id === 'pass' ? 'Ghostverse Pass' : id === 'world' ? 'World Pass' : id === 'club' ? 'Coin Club' : it.name + ' of coins') + '</h2><button class="btn ghost" id="shClose">Close</button></div>' + what +
     '<div class="pricebar"><span class="was">' + it.price + '</span><span class="freetag">Free during launch</span></div>' +
     '<p class="note">Ghostverse is free while it launches. Later this will cost ' + it.price + '. Claim it now and it stays yours.</p>' +
@@ -1627,16 +1662,16 @@ function premiumClick(id){
         else if(id === 'club'){ P.club = true; P.coins += it.coins; }
         else if(id === 'world'){ P.world = true; }
         else if(id === 'premium'){ grantPremium(); P.coins += 3000; P.inv.portal = (P.inv.portal || 0) + 5; }
-        else { if(P.claimed.includes(id)) return closeSheet(); P.coins += it.coins; }
+        else { if(P.claimed.includes(id)) return closeSheet(); P.coins += it.coins || 0; P.shards = (P.shards || 0) + (it.shards || 0); }
         if(P.pendingBuy){ const pb = P.pendingBuy; P.pendingBuy = null; setTimeout(() => buyCoinItem(pb), 700); }
         if(!P.claimed.includes(id)) P.claimed.push(id);
         saveP(); bumpCoins(); sfx.success(); buzz([40, 30, 80]); AN.track('premium_claim_free', {item:id, price_pence:it.pence});
-        closeSheet(); toast(id === 'world' ? 'World Pass active! Every place on Earth is open.' : id === 'pass' ? 'Pass active. Every night is open.' : '+' + it.coins.toLocaleString() + ' coins'); signals = null; render();
+        closeSheet(); toast(id === 'world' ? 'World Pass active! Every place on Earth is open.' : id === 'pass' ? 'Pass active. Every night is open.' : (it.shards ? '+' + it.shards + ' Soul Shards' : '+' + (it.coins || 0).toLocaleString() + ' coins')); signals = null; render();
       };
     });
 }
 /* One Stripe Payment Link sells one bundle: Ghostverse Premium. */
-const PREMIUM = {name:'Ghostverse Premium', coins:3000, tickets:5};
+const PREMIUM = {name:'Ghostverse Premium', coins:3000, shards:300, tickets:5};
 function premiumBundleSheet(from){
   const price = CFG.premiumPrice || '$4.99';
   openSheet('<div class="hd"><h2>' + PREMIUM.name + '</h2><button class="btn ghost" id="shClose">Close</button></div><p class="lore">One payment unlocks everything:</p>' +
@@ -1966,11 +2001,13 @@ function signInSheet(reason){
 function playerId(){ if(!P.pid){ P.pid = 'p' + (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2) + Date.now().toString(36)); saveP(); } return P.pid; }
 function goCheckout(link, id){ P.checkoutAt = Date.now(); P.checkoutItem = id; saveP(); location.href = link + (link.includes('?') ? '&' : '?') + 'client_reference_id=' + encodeURIComponent(playerId()); }
 function grantItem(id, quiet){
-  if(id === 'premium'){ grantPremium(); P.coins += PREMIUM.coins; P.inv.portal = (P.inv.portal || 0) + PREMIUM.tickets; }
-  else { const it = SHOP.premium.find(x => x.id === id); if(!it) return false; if(id === 'pass') P.pass = true; else { if(id === 'club') P.club = true; P.coins += it.coins || 0; } }
+  let gotSh = 0;
+  if(id === 'premium'){ grantPremium(); P.coins += PREMIUM.coins; P.inv.portal = (P.inv.portal || 0) + PREMIUM.tickets; gotSh = PREMIUM.shards; }
+  else { const it = SHOP.premium.find(x => x.id === id); if(!it) return false; if(id === 'pass') P.pass = true; else { if(id === 'club') P.club = true; P.coins += it.coins || 0; gotSh = (it.shards || 0) * (/^coins_/.test(id) && firstTopup() ? 2 : 1); } }
+  P.shards = (P.shards || 0) + gotSh;
   P.claimed.push('paid_' + id); saveP(); bumpCoins(); sfx.success(); buzz([40, 30, 80]); AN.track('purchase_complete', {item:id, verified:true});
   if(sbOn() && !signedIn()) setTimeout(() => toast('Tip: sign in (tap your name, top right) so your purchase is safe on any phone.', 5000), 5200);
-  if(!quiet) toast(id === 'premium' ? 'Payment confirmed! Premium active for ' + premDaysLeft() + ' days.' : 'Payment confirmed! +' + ((SHOP.premium.find(x => x.id === id) || {}).coins || 0).toLocaleString() + ' coins', 4500);
+  if(!quiet) toast(id === 'premium' ? 'Payment confirmed! Premium active for ' + premDaysLeft() + ' days, +' + gotSh + ' Soul Shards.' : 'Payment confirmed!' + (gotSh ? ' +' + gotSh.toLocaleString() + ' Soul Shards 💎' : '') + (((SHOP.premium.find(x => x.id === id) || {}).coins) ? ' +' + SHOP.premium.find(x => x.id === id).coins.toLocaleString() + ' coins' : ''), 4500);
   if(P.pendingBuy){ const pb = P.pendingBuy; P.pendingBuy = null; saveP(); setTimeout(() => buyCoinItem(pb), 1200); }
   return true;
 }
@@ -1997,7 +2034,7 @@ function handlePaidReturn(){
   // Stripe Payment Links can return to <site>/#paid.<item>. Temporary until server-side verification is added.
   const h = location.hash || ''; if(!h.startsWith('#paid.')) return;
   const id = h.slice(6); const it = SHOP.premium.find(x => x.id === id); if(!it) return;
-  if(id === 'pass') P.pass = true; else { if(id === 'club') P.club = true; P.coins += it.coins; }
+  if(id === 'pass') P.pass = true; else { if(id === 'club') P.club = true; P.coins += it.coins || 0; P.shards = (P.shards || 0) + (it.shards || 0); }
   if(P.pendingBuy){ const pb = P.pendingBuy; P.pendingBuy = null; setTimeout(() => buyCoinItem(pb), 900); }
   P.claimed.push('paid_' + id); saveP(); AN.track('purchase_complete', {item:id, price_pence:it.pence});
   try{ history.replaceState(null, '', location.href.split('#')[0]); }catch(e){}
@@ -2240,7 +2277,7 @@ function spawnEntity(sp, yaw, pitch, dist, opts = {}){
 function placeEntity(e){ const d = dirFrom(e.yaw, e.pitch).multiplyScalar(e.dist); e.g.root.position.copy(d); e.g.root.lookAt(camera.position); }
 function killEntity(e, burst = true){ if(e.dead) return; e.dead = true; if(burst) emit(e.g.root.position, e.sp.rim, 26, 1.6); scene.remove(e.g.root); e.g.dispose(); }
 
-const CHG_MAX = 10, CHG_REGEN = 20 * 60000, REFILL_COST = 120, RETRY_COST = 40;
+const CHG_MAX = 10, CHG_REGEN = 20 * 60000, REFILL_COST = 25, RETRY_COST = 5;   // Soul Shards
 function chg(){ const now = Date.now(); if(!P.chg) P.chg = {n:CHG_MAX, t:now};
   if(P.chg.n >= CHG_MAX){ P.chg.t = now; return P.chg; }
   const k = Math.floor((now - P.chg.t) / CHG_REGEN); if(k > 0){ P.chg.n = Math.min(CHG_MAX, P.chg.n + k); P.chg.t = P.chg.n >= CHG_MAX ? now : P.chg.t + k * CHG_REGEN; }
@@ -2257,14 +2294,14 @@ function outOfOil(){
     '<div class="oilart"><span class="oilflame"></span></div>' +
     '<p class="lore" style="text-align:center">You\'ve used your free hunts. The lantern refills by itself: <b>+1 hunt every 20 minutes</b>.<br>Next free hunt in <b id="oilT">' + mmss(chgNext()) + '</b></p>' +
     '<button class="btn ghost big" id="oilAd" data-reward hidden style="margin-bottom:10px">▶ Watch a short video · +3 free hunts</button>' +
-    '<button class="btn pump big" id="oilRefill"><span class="coin"></span> Refill ' + CHG_MAX + ' hunts now · ' + REFILL_COST + ' coins</button>' +
+    '<button class="btn pump big" id="oilRefill">Refill ' + CHG_MAX + ' hunts now · ' + GEM + ' ' + REFILL_COST + '</button>' +
     (CFG.stripeLink || freeLaunchActive() ? '<button class="btn ecto big" id="oilPrem" style="margin-top:10px">∞ Unlimited hunts for 30 days · ' + esc(CFG.premiumPrice || '$4.99') + '</button>' : '') +
-    '<p class="note" style="text-align:center">Premium also unlocks the whole world and every night for 30 days, plus 3,000 coins to keep.</p>', sh => {
+    '<p class="note" style="text-align:center">Premium also unlocks the whole world and every night for 30 days, plus 300 Soul Shards and 3,000 coins.</p>', sh => {
       sh.querySelector('#shClose').onclick = () => { closeSheet(); pendingHunt = null; AN.track('oil_dismiss'); };
       const t = setInterval(() => { const el = $('#oilT'); if(!el){ clearInterval(t); return; } el.textContent = mmss(chgNext()); if(chg().n > 0){ clearInterval(t); closeSheet(); toast('Your lantern has oil again!'); renderChg(); } }, 1000);
       renderRewardBtns();
       sh.querySelector('#oilAd').onclick = () => { ADS.reward('lantern_refill', () => { P.rwN = (P.rwN || 0) + 1; const c = chg(); c.n = Math.min(CHG_MAX, c.n + 3); saveP(); renderChg(); clearInterval(t); closeSheet(); sfx.success(); toast('+3 free hunts! Thanks for watching.'); const o = pendingHunt; pendingHunt = null; if(o) setTimeout(() => o.rushStart ? startRush(...o.rushStart) : startHunt(o), 500); }); };
-      sh.querySelector('#oilRefill').onclick = () => { clearInterval(t); if(!spend(REFILL_COST)){ closeSheet(); P.pendingBuy = 'refill'; saveP(); notEnough(REFILL_COST, 'refill'); return; } AN.track('oil_refill_coins'); closeSheet(); refillOil(); const o = pendingHunt; pendingHunt = null; if(o) setTimeout(() => o.rushStart ? startRush(...o.rushStart) : startHunt(o), 400); };
+      sh.querySelector('#oilRefill').onclick = () => { clearInterval(t); if(!spendShards(REFILL_COST, 'refill')){ closeSheet(); P.pendingBuy = 'refill'; saveP(); notEnoughShards(REFILL_COST, 'refill'); return; } AN.track('oil_refill_shards'); closeSheet(); refillOil(); const o = pendingHunt; pendingHunt = null; if(o) setTimeout(() => o.rushStart ? startRush(...o.rushStart) : startHunt(o), 400); };
       const pr = sh.querySelector('#oilPrem'); if(pr) pr.onclick = () => { clearInterval(t); AN.track('premium_click', {from:'oil'}); closeSheet(); premiumClick('premium'); };
     });
   if(H.on){ endHunt(); setTimeout(show, 600); } else show();
@@ -2771,7 +2808,7 @@ function escapeHunt(){
   $('#resK').textContent = 'Escaped'; $('#resTitle').textContent = sp.boss ? 'He retreats…' : 'It got away';
   $('#resText').innerHTML = sp.boss ? 'The Hollow King melts back into the Veil, laughing. He will return. Try again.' : 'The ' + esc(sp.name) + ' slipped back into the Veil. Your lantern will find others.';
   $('#resLvl').textContent = ''; $('#resPhoto').hidden = true; $('#resRow1').hidden = true; $('#resRewards').hidden = true; $('#resNext').hidden = !!sp.boss;
-  $('#resRetry').hidden = false; $('#resRetry').textContent = (sp.boss || H.opts.haunt || H.opts.tutorial) ? 'Try again' : 'Try again · ' + RETRY_COST + ' coins'; H.escaped = true;
+  $('#resRetry').hidden = false; $('#resRetry').textContent = (sp.boss || H.opts.haunt || H.opts.tutorial) ? 'Try again' : 'Try again · 💎 ' + RETRY_COST; H.escaped = true;
   setTimeout(() => { if(H.on) $('#result').hidden = false; }, 700);
 }
 $('#resDone').onclick = () => { endHunt(); setTimeout(maybeOffer, 1200); setTimeout(maybeInviteNudge, 1600); afterJoin(); };
@@ -2793,7 +2830,7 @@ function nextTarget(indoor){
   return sg ? {sp:sg.sp, signal:sg.id, variant:sg.variant || ''} : null;
 }
 $('#resRetry').onclick = () => { const o = Object.assign({}, H.opts); const paid = !(H.sp.boss || o.haunt || o.tutorial);
-  if(paid){ if(!spend(RETRY_COST)){ AN.track('retry_no_coins'); notEnough(RETRY_COST, 'retry'); return; } AN.track('retry_paid', {sp:H.sp.key}); if(o.world) delete P.wgone[o.world]; }
+  if(paid){ if(!spendShards(RETRY_COST, 'retry')){ AN.track('retry_no_shards'); notEnoughShards(RETRY_COST, 'retry'); return; } AN.track('retry_paid', {sp:H.sp.key}); if(o.world) delete P.wgone[o.world]; }
   o._retry = true; if(o.world) delete P.wgone[o.world]; saveP(); startHunt(o); };
 $('#resHaunt').onclick = () => { const k = H.sp.key; AN.track('haunt_sheet_open', {from:'result'}); endHunt(); openHauntSheet(k); };
 $('#resShare').onclick = async () => {
@@ -3381,7 +3418,7 @@ function renderReleases(){
 function portalCities(){ const seen = new Set(); return LANDMARKS.filter(l => { if(seen.has(l[0])) return false; seen.add(l[0]); return true; }); }
 const contOf = l => { const [lat, lng] = [l[2], l[3]]; return lng < -30 ? 'Americas' : (lat < -10 && lng > 100) ? 'Oceania' : lng >= 60 ? 'Asia' : lat > 35.5 ? 'Europe' : 'Africa & Middle East'; };
 let portalCont = 'Europe';
-const PORTAL_COST = 150, PORTAL_MIN = 5, EXTEND_COST = 60;
+const PORTAL_COST = 30, PORTAL_MIN = 5, EXTEND_COST = 10;   // Soul Shards
 const freePortalReady = () => P.freePortalDay !== dayKey();
 const STARTER = new Set(['Old Town Square','Tower of London','Edinburgh Castle','Dublin Castle','New York Public Library','Times Square','French Quarter','Salem Common','Zócalo','Louvre courtyard','Colosseum','Brandenburg Gate','Tokyo Tower','Gateway of India','Bangalore Palace','Sydney Opera House']);
 const hasWorld = () => !!P.world || isPremium();
@@ -3389,7 +3426,7 @@ const isOpenPlace = l => hasWorld() || STARTER.has(l[0]);
 const worldPrice = () => (SHOP.premium.find(x => x.id === 'world') || {}).price || '$4.99';
 function openPortalSheet(){
   const n = P.inv.portal || 0, free = freePortalReady(), canGo = hasWorld() || n > 0 || free;
-  const here = W.portal ? '<div class="portalnow"><div><b>You are in ' + esc(W.portal.name) + ', ' + esc(W.portal.city) + '</b><small>' + Math.max(1, Math.ceil((W.portal.until - Date.now()) / 60000)) + ' min left. Hunt the ghosts on the map, or jump somewhere else.</small></div><div class="row2"><button class="btn ecto" id="pnHunt">Hunt here</button><button class="btn ghost" id="pnHome">Return home</button></div><button class="btn pump" id="pnMore">+5 minutes · ' + EXTEND_COST + ' coins</button></div>' : '';
+  const here = W.portal ? '<div class="portalnow"><div><b>You are in ' + esc(W.portal.name) + ', ' + esc(W.portal.city) + '</b><small>' + Math.max(1, Math.ceil((W.portal.until - Date.now()) / 60000)) + ' min left. Hunt the ghosts on the map, or jump somewhere else.</small></div><div class="row2"><button class="btn ecto" id="pnHunt">Hunt here</button><button class="btn ghost" id="pnHome">Return home</button></div><button class="btn pump" id="pnMore">+5 minutes · 💎 ' + EXTEND_COST + '</button></div>' : '';
   const total = portalCities().length, lockedN = total - STARTER.size;
   const wp = hasWorld() ? '<div class="worldbar own"><b>🌍 World Pass active</b><small>Every place is open, no tickets needed. Trips last 15 minutes.</small><button class="btn ecto" id="pDrop">📍 Drop a portal on any street on Earth</button></div>' :
     '<div class="worldbar"><div class="eyebrow" style="color:#ffd28a">World Pass</div><b>Unlock all ' + total + ' places + any street on Earth</b><small>' + lockedN + ' locked places like the Eiffel Tower, Taj Mahal, Machu Picchu and Mt Fuji. Drop a portal anywhere, no tickets, 15-minute trips.</small>' +
@@ -3398,21 +3435,21 @@ function openPortalSheet(){
   openSheet('<div class="hd"><h2>Portals</h2><button class="btn ghost" id="shClose">Close</button></div>' + here +
     '<p class="lore">A portal takes you to a real place anywhere in the world. You stand in the actual street in 360°, and its ghosts come out to play. Trips last ' + (hasWorld() ? 15 : PORTAL_MIN) + ' minutes.</p>' + wp +
     (hasWorld() ? '' : '<div class="chips"><span class="chip">Portal Tickets ×' + n + '</span>' + status + '</div>' +
-      (canGo ? '' : '<div class="portalbuy"><span>Out of tickets. Your free portal comes back tomorrow.</span><button class="btn ecto" id="pBuy">Buy a ticket · ' + PORTAL_COST + ' coins</button></div>')) +
+      (canGo ? '' : '<div class="portalbuy"><span>Out of tickets. Your free portal comes back tomorrow.</span><button class="btn ecto" id="pBuy">Buy a ticket · 💎 ' + PORTAL_COST + '</button></div>')) +
     '<div class="chips" id="pcConts" style="margin-bottom:10px">' + ['Europe','Americas','Asia','Africa & Middle East','Oceania'].map(c => '<button class="chip' + (c === portalCont ? ' on' : '') + '" data-ct="' + c + '">' + c + '</button>').join('') + '</div>' +
     '<div class="portalgrid">' + portalCities().map((l, i) => contOf(l) !== portalCont ? '' : '<button class="portal' + (isOpenPlace(l) ? '' : ' locked') + '" data-pc="' + i + '"><span class="th">' + thumbImg(l[4]) + '</span><span style="min-width:0"><b>' + esc(l[0]) + '</b><small>' + esc(l[1]) + '</small></span>' + (isOpenPlace(l) ? '' : '<i class="lk">🔒</i>') + '</button>').join('') + '</div>',
     sh => { sh.querySelector('#shClose').onclick = closeSheet;
       sh.querySelectorAll('[data-ct]').forEach(b => b.onclick = () => { portalCont = b.dataset.ct; openPortalSheet(); });
       const ph = sh.querySelector('#pnHome'); if(ph) ph.onclick = () => { closeSheet(); endPortal(); };
-      const pm = sh.querySelector('#pnMore'); if(pm) pm.onclick = () => { if(!spend(EXTEND_COST)){ closeSheet(); notEnough(EXTEND_COST, 'extend'); return; } W.portal.until = Math.max(W.portal.until, Date.now()) + 5 * 60000; W.portal.warned = false; P.portalNow = W.portal; saveP(); renderChip(); sfx.success(); AN.track('portal_extend'); toast('+5 minutes in ' + W.portal.city); openPortalSheet(); };
+      const pm = sh.querySelector('#pnMore'); if(pm) pm.onclick = () => { if(!spendShards(EXTEND_COST, 'extend')){ closeSheet(); notEnoughShards(EXTEND_COST, 'extend'); return; } W.portal.until = Math.max(W.portal.until, Date.now()) + 5 * 60000; W.portal.warned = false; P.portalNow = W.portal; saveP(); renderChip(); sfx.success(); AN.track('portal_extend'); toast('+5 minutes in ' + W.portal.city); openPortalSheet(); };
       const pn = sh.querySelector('#pnHunt'); if(pn) pn.onclick = () => { closeSheet(); if(tab !== 'map') setTab('map'); setTimeout(() => { if(W.portal) setPos(W.portal.lat, W.portal.lng, 5, true); }, 250); };
-      const pb = sh.querySelector('#pBuy'); if(pb) pb.onclick = () => { if(!spend(PORTAL_COST)){ closeSheet(); notEnough(PORTAL_COST, 'portal'); return; } P.inv.portal = (P.inv.portal || 0) + 1; saveP(); sfx.success(); AN.track('portal_buy_coins'); openPortalSheet(); };
+      const pb = sh.querySelector('#pBuy'); if(pb) pb.onclick = () => { if(!spendShards(PORTAL_COST, 'portal')){ closeSheet(); notEnoughShards(PORTAL_COST, 'portal'); return; } P.inv.portal = (P.inv.portal || 0) + 1; saveP(); sfx.success(); AN.track('portal_buy_coins'); openPortalSheet(); };
       const pw = sh.querySelector('#pWorld'); if(pw) pw.onclick = () => { AN.track('world_pass_click', {from:'portal_sheet'}); closeSheet(); premiumClick('world'); };
       const pdt = sh.querySelector('#pDropT'); if(pdt) pdt.onclick = () => { AN.track('drop_anywhere_teaser'); teaserSheet(null); };
       const pd = sh.querySelector('#pDrop'); if(pd) pd.onclick = () => { closeSheet(); startDropPortal(); };
       sh.querySelectorAll('[data-pc]').forEach(b => b.onclick = () => { const l = portalCities()[+b.dataset.pc]; if(!l) return;
         if(!isOpenPlace(l)){ AN.track('locked_place_tap', {place:l[0]}); teaserSheet(l); return; }
-        if(!hasWorld() && !(P.inv.portal > 0) && !freePortalReady()){ toast('You need a Portal Ticket. Buy one above for ' + PORTAL_COST + ' coins.'); return; }
+        if(!hasWorld() && !(P.inv.portal > 0) && !freePortalReady()){ toast('You need a Portal Ticket. Buy one above for ' + PORTAL_COST + ' Soul Shards.'); return; }
         closeSheet(); if(W.portal) endPortal(true, true); l._how = hasWorld() ? 'world' : freePortalReady() ? 'free' : 'ticket'; enterPortal(l); }); });
 }
 /* A taste of the place: its real street photo slowly pans past, with the ghost that lives there. */
@@ -3804,6 +3841,8 @@ const ACH = [
   {id:'k1', t:'Kingslayer', d:'Defeat the Hollow King', stat:'king', n:1, coins:1000},
 ];
 if(typeof P.stats !== 'object' || !P.stats) P.stats = {};
+if(typeof P.shards !== 'number') P.shards = 0;
+if(!P.gemGift){ P.gemGift = 1; P.shards += 40; saveP(); setTimeout(() => { try{ bumpCoins(); toast('🎁 New: Soul Shards 💎! Here are 40 free to try: refills, rare lures and portals.', 5500); }catch(e){} }, 4000); }
 P.stats = Object.assign({catches:0, caches:0, haunts:0, feeds:0, riddles:0, traps:0, golden:0, cities:[], rushBest:0, rushBest1:0, rushBest3:0, rushBest5:0}, P.stats);
 if(!Array.isArray(P.ach)) P.ach = []; if(typeof P.camp !== 'object' || !P.camp) P.camp = {ch:0, prog:{}, seen:-1};
 function statVal(k){ if(k === 'species') return Object.keys(P.caught).length; if(k === 'cities') return (P.stats.cities || []).length; if(k === 'streak') return (P.daily && P.daily.streak) || 0; if(k === 'king') return P.king ? 1 : 0; return +P.stats[k] || 0; }
