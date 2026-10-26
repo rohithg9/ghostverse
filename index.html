@@ -517,6 +517,8 @@ a.btn{text-decoration:none;text-align:center;display:inline-flex;align-items:cen
 .portal b{font-size:13.5px;display:block;line-height:1.2}.portal small{font-size:11.5px;color:var(--mute)}
 
 @media (prefers-reduced-motion: reduce){.float,.fog,.radar::after{animation:none}.shake{animation:none}}
+.adslot.adwait{min-height:0}.adslot.adwait .adlbl{display:none}
+.adslot ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important}
 </style>
 
 <div id="sky"><canvas id="skyCv"></canvas></div>
@@ -1891,7 +1893,10 @@ const ADS = {
     if(!this.loaded || !CFG.adsenseSlot) return;
     document.querySelectorAll('.adslot').forEach(el => { if(!this.on()){ el.hidden = true; return; } if(el.dataset.done) return; el.hidden = false; el.dataset.done = 1;
       el.innerHTML = '<small class="adlbl">Advertisement</small><ins class="adsbygoogle" style="display:block" data-ad-client="' + esc(CFG.adsenseClient) + '" data-ad-slot="' + esc(CFG.adsenseSlot) + '" data-ad-format="auto" data-full-width-responsive="true"' + (CFG.adTest ? ' data-adtest="on"' : '') + '></ins>';
-      try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){} });
+      try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
+      // show the box only once Google actually fills it (before approval, or with no ad, it stays hidden)
+      el.classList.add('adwait'); let n = 0; const chk = setInterval(() => { const ins = el.querySelector('ins'); const st = ins && ins.getAttribute('data-ad-status');
+        if(st === 'filled'){ el.classList.remove('adwait'); clearInterval(chk); AN.track('ad_banner_filled'); } else if(st === 'unfilled' || ++n > 40){ el.hidden = true; el.dataset.done = ''; clearInterval(chk); } }, 750); });
   },
   reward(name, onReward){
     if(!this.loaded || typeof adBreak !== 'function'){ toast('No video available right now. Try again in a minute.'); return; }

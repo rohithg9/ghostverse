@@ -32,7 +32,7 @@ window.GV_CONFIG = {
 
   // Google AdSense. Leave '' until AdSense approves you, then paste your publisher id (ca-pub-...) and ad unit id.
   adsenseClient: 'ca-pub-1136850550476024',
-  adsenseSlot: '',
+  adsenseSlot: '4292444629',
   adTest: false,
 
   // Player accounts (Supabase). The publishable key is meant to be public.
